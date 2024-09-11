@@ -1,0 +1,4 @@
+{"item1": "Se arrivassi turbato/a in classe, i miei insegnanti sarebbero preoccupati per me.", "item2": "Mi piace fare domande.", "semantically": "0.81", "taxonomically": "0.64", "causally": "0.82", "T5": 0.84}
+{"item1": "Gli insegnanti nella mia scuola sono cattivi nei miei confronti.", "item2": "Sono pi\u00f9 curioso/a della maggior parte delle persone che conosco.", "semantically": "0.42", "taxonomically": "0.66", "causally": "0.33", "T5": 0.87}
+{"item1": "Se arrivassi turbato/a in classe, i miei insegnanti sarebbero preoccupati per me.", "item2": "Gli insegnanti nella mia scuola sono cattivi nei miei confronti.", "semantically": "0.81", "taxonomically": "0.81", "causally": "0.66", "T5": 0.89}
+{"item1": "Gli insegnanti nella mia scuola sono amichevoli nei miei confronti.", "item2": "Mi piace fare domande.", "semantically": "0.73", "taxonomically": "0.75", "causally": "0.62", "T5": 0.85}
