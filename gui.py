@@ -7,10 +7,10 @@ import os
 import json
 from datetime import datetime
 import sys
-import numpy as np
+from numpy import mean
 from sentence_similarity import T5_model, util
 from sklearn.metrics import mean_absolute_error
-import itertools
+from itertools import combinations
 
 DEBUG = False
 
@@ -94,6 +94,8 @@ class MainWindow(qtw.QWidget):
 
     def admin_page(self, username):
         self.clearLayout(self.layout())
+        self.message_label = qtw.QLabel()
+
         if DEBUG:
             print('Admin page')
         # add widgets
@@ -149,15 +151,15 @@ class MainWindow(qtw.QWidget):
 
         tabs = qtw.QTabWidget()
         items_tab = qtw.QWidget()
-        evaluations_tab = qtw.QWidget()
+        self.evaluations_tab = qtw.QWidget()
         tabs.addTab(items_tab, 'Items')
-        tabs.addTab(evaluations_tab, 'Evaluations')
+        tabs.addTab(self.evaluations_tab, 'Evaluations')
         items_tab.setLayout(qtw.QVBoxLayout())
         self.search_bar = qtw.QLineEdit()
         self.search_bar.setPlaceholderText('Search')
         self.search_bar.textChanged.connect(lambda text: self.search(text, items_layout))
         items_tab.layout().addWidget(self.search_bar, alignment=qtc.Qt.AlignmentFlag.AlignTop|qtc.Qt.AlignmentFlag.AlignRight)
-        evaluations_tab.setLayout(qtw.QVBoxLayout())
+        self.evaluations_tab.setLayout(qtw.QVBoxLayout())
         items_layout = qtw.QVBoxLayout()
         self.evaluations_layout = qtw.QVBoxLayout()
 
@@ -173,7 +175,7 @@ class MainWindow(qtw.QWidget):
         scroll_widget_2 = qtw.QWidget()
         scroll_widget_2.setLayout(self.evaluations_layout)
         scroll_area_2.setWidget(scroll_widget_2)
-        evaluations_tab.layout().addWidget(scroll_area_2)
+        self.evaluations_tab.layout().addWidget(scroll_area_2)
         evaluation_files = os.listdir('data/evaluations')
         if not evaluation_files:
             message = qtw.QLabel('No evaluations')
@@ -222,15 +224,15 @@ class MainWindow(qtw.QWidget):
 
         for items in self.evaluations:
             if 'semantically' in self.evaluations[items]:
-                self.evaluations[items]['semantically_average'] = round(np.mean(self.evaluations[items]['semantically']),2)
+                self.evaluations[items]['semantically_average'] = round(mean(self.evaluations[items]['semantically']),2)
             else:
                 self.evaluations[items]['semantically_average'] = 'No annotation'
             if 'taxonomically' in self.evaluations[items]:
-                self.evaluations[items]['taxonomically_average'] = round(np.mean(self.evaluations[items]['taxonomically']),2)
+                self.evaluations[items]['taxonomically_average'] = round(mean(self.evaluations[items]['taxonomically']),2)
             else:
                 self.evaluations[items]['taxonomically_average'] = 'No annotation'
             if 'causally' in self.evaluations[items]:
-                self.evaluations[items]['causally_average'] = round(np.mean(self.evaluations[items]['causally']),2)
+                self.evaluations[items]['causally_average'] = round(mean(self.evaluations[items]['causally']),2)
             else:
                 self.evaluations[items]['causally_average'] = 'No annotation'
             item = qtw.QGroupBox()
@@ -252,7 +254,7 @@ class MainWindow(qtw.QWidget):
         T5_mae_button = qtw.QPushButton('Run T5 and calculate MAE')
         T5_mae_button.clicked.connect(self.T5_mae)
 
-        evaluations_tab.layout().addWidget(T5_mae_button, alignment=qtc.Qt.AlignmentFlag.AlignBottom)
+        self.evaluations_tab.layout().addWidget(T5_mae_button, alignment=qtc.Qt.AlignmentFlag.AlignBottom)
 
 
         for subscale in self.dict:
@@ -327,24 +329,38 @@ class MainWindow(qtw.QWidget):
         settings_button.clicked.connect(lambda: self.admin_settings())
         layout_admin.addWidget(settings_button, alignment=qtc.Qt.AlignmentFlag.AlignBottom)
 
+
     def T5_mae(self):
+        progress_bar = qtw.QProgressBar()
+        self.evaluations_tab.layout().addWidget(progress_bar)
+        progress_bar.setRange(0, len(self.evaluations))
+
         for items in self.evaluations:
             if 'T5' not in self.evaluations[items]:
+
                 item1 = items[0]
                 item2 = items[1]
-                self.message_label.setText('Running T5 evaluation for\n' + item1 + '\n' + item2 + '\n' + str(len(self.evaluations) - list(self.evaluations.keys()).index(items) - 1) + ' left')
-                if len(item1) > 20 or len(item2) > 20:
-                    self.message_label.setFixedSize(max(len(item1), len(item2)) * 7, 50)
-                else:
-                    self.message_label.setFixedSize(200, 50)
-                self.message_label.move(self.width() - self.message_label.width() - 20, 20)
-                self.message_label.setVisible(True)
+
+                # update progress bar
+                progress_bar.setValue(progress_bar.value() + 1)
+
+                qtw.QApplication.processEvents()
+                
+                # add a sleep to simulate the time it takes to run the T5 model
+
+
+
+
 
 
                 model = T5_model()
                 embeddings = model.encode([item1, item2], convert_to_tensor=True)
                 similarity = util.pytorch_cos_sim(embeddings[0], embeddings[1])
                 self.evaluations[items]['T5'] = round(similarity.item(),2)
+        
+        progress_bar.deleteLater()
+                
+
         # update evaluation layout
         self.clearLayout(self.evaluations_layout)
         for items in self.evaluations:
@@ -357,6 +373,9 @@ class MainWindow(qtw.QWidget):
             item.layout().addWidget(qtw.QLabel('Taxonomic similarity: '+str(self.evaluations[items]['taxonomically_average'])))
             item.layout().addWidget(qtw.QLabel('Causal similarity: '+str(self.evaluations[items]['causally_average'])))
             item.layout().addWidget(qtw.QLabel('T5 similarity: '+str(self.evaluations[items]['T5'])))
+        
+
+        
 
         
         
@@ -404,58 +423,6 @@ class MainWindow(qtw.QWidget):
             self.message_label.setVisible(True)
             qtc.QTimer.singleShot(3000, lambda: self.message_label.setVisible(False))
             
-
-
-
-        
-
-
-
-    
-
-    def run_T5(self, eval_data, item, button):
-
-        self.message_label.setText('Running T5 evaluation for\n' + eval_data['item1'] + '\n' + eval_data['item2'])
-        if len(eval_data['item1']) > 20 or len(eval_data['item2']) > 20:
-            self.message_label.setFixedSize(max(len(eval_data['item1']), len(eval_data['item2'])) * 7, 50)
-        else:
-            self.message_label.setFixedSize(200, 50)
-        self.message_label.move(self.width() - self.message_label.width() - 20, 20)
-        self.message_label.setVisible(True)
-        qtc.QTimer.singleShot(5000, lambda: self.message_label.setVisible(False))
-
-        if DEBUG:
-            print('Running T5')
-        button.setHidden(False)
-
-        # Delay the execution of the T5 model evaluation
-        qtc.QTimer.singleShot(100, lambda: self.perform_T5_eval(eval_data, item, button))
-
-    def perform_T5_eval(self, eval_data, item, button):
-        similarity = self.perform_T5(eval_data)
-        item.layout().addWidget(qtw.QLabel('T5 similarity: ' + str(similarity)))
-        #item.layout().addWidget(qtw.QLabel('Mean absolute error: ' + str(self.evaluations[(eval_data['item1'], eval_data['item2'])]['mae'])))
-        #item.layout().addWidget(qtw.QLabel('Pearson correlation: ' + str(self.evaluations[(eval_data['item1'], eval_data['item2'])]['pearson'])))
-
-
-        self.message_label.setText('T5 similarity done')
-        self.message_label.setFixedSize(150, 50)
-        self.message_label.move(self.width() - self.message_label.width() - 20, 20)
-        self.message_label.setVisible(True)
-        qtc.QTimer.singleShot(2000, lambda: self.message_label.setVisible(False))
-        button.setHidden(True)
-
-
-
-    def perform_T5(self, eval_data):
-        item1 = eval_data['item1']
-        item2 = eval_data['item2']
-        model = T5_model()    
-        embeddings = model.encode([item1, item2], convert_to_tensor=True)
-        similarity = util.pytorch_cos_sim(embeddings[0], embeddings[1])
-        self.evaluations[(item1, item2)]['T5'] = round(similarity.item(),2)
-        return round(similarity.item(),2)
-
 
     def admin_settings(self):
         self.clearLayout(self.layout())
@@ -611,7 +578,9 @@ class MainWindow(qtw.QWidget):
                 pass
 
             else:
-                print(settings['choice_method'])
+                if DEBUG:
+                    print('Creating random choices')
+                    print(settings['choice_method'])
                 self.create_choices()
 
     def create_choices(self):
@@ -629,6 +598,8 @@ class MainWindow(qtw.QWidget):
         self.message_label.setText('Choices created')
         self.message_label.setVisible(True)
         qtc.QTimer.singleShot(2000, lambda: self.message_label.setVisible(False))
+        
+
 
 
     def create_random_choices(self):
@@ -661,7 +632,7 @@ class MainWindow(qtw.QWidget):
                 for subscale, items_dict in d.items():
                     all_items.extend(items_dict.values())
                 
-                self.choices = random.sample(list(itertools.combinations(all_items, 2)),k=10)
+                self.choices = random.sample(list(combinations(all_items, 2)),k=10)
                 
                 with open('data/temp/random_choices.csv', 'w', encoding='utf-8') as file:
                     for i in self.choices:
@@ -707,7 +678,7 @@ class MainWindow(qtw.QWidget):
             '''
 
             self.choices = [item for subscale in d.values() for item in subscale.values()]
-            self.choices = list(itertools.combinations(self.choices, 2))
+            self.choices = list(combinations(self.choices, 2))
 
             with open('data/temp/'+settings['choice_method']+'_choices.csv', 'w', encoding='utf-8') as file:
                 for i in self.choices:
@@ -736,7 +707,7 @@ class MainWindow(qtw.QWidget):
                         d[sub][number] = item
                 self.choices = []
                 self.choices = [item for subscale in d.values() for item in subscale.values()]
-                self.choices = list(itertools.combinations(self.choices, 2))
+                self.choices = list(combinations(self.choices, 2))
                 self.choices = random.choices(self.choices, k=10)
 
 
@@ -826,7 +797,7 @@ class MainWindow(qtw.QWidget):
         if DEBUG:
             print('Searching')
         self.clearLayout(layout)
-
+        self.message_label.setVisible(False)
         if text == '':
             self.admin_page('admin')
         else:
@@ -868,6 +839,7 @@ class MainWindow(qtw.QWidget):
                         # if j is the last item in the subscale, add the buttons
                         if j == matching_items[-1]:
                             groupbox.layout().addLayout(buttons_view)
+                            
 
         if not self.dict:
             message = qtw.QLabel('No subscales')
@@ -1012,7 +984,6 @@ class MainWindow(qtw.QWidget):
             with open('settings.json', 'r', encoding='utf-8') as file:
                 settings = json.load(file)
             filename = settings['subscale_file']
-            print(self.dict)
             with open(filename, 'w', encoding='utf-8') as file:
                 for i in self.dict:
                     for j in self.dict[i]:
@@ -1052,15 +1023,16 @@ class MainWindow(qtw.QWidget):
         # Call the login page function to return to the login screen
         self.login_page()
 
-    def clearLayout(self, layout): 
+    def clearLayout(self, layout):
         if layout is not None:
             while layout.count():
                 item = layout.takeAt(0)
                 widget = item.widget()
-                if widget:
+                if widget is not None:
                     widget.deleteLater()
-                elif item.layout():
+                else:
                     self.clearLayout(item.layout())
+        self.message_label.setVisible(False)
 
     def user_page(self, username):
         if DEBUG:
