@@ -2,3 +2,4 @@ gensim
 numpy
 PyQt6
 sentence-transformers
+python-docx 
