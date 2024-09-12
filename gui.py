@@ -1116,7 +1116,7 @@ class MainWindow(qtw.QWidget):
         item2.layout().addWidget(self.label2)
 
         # add a box with slider for 'somiglianza semantica'
-        self.ev_1 = qtw.QGroupBox('Somiglianza semantica')
+        self.ev_1 = qtw.QGroupBox('Quanto sono sinonimi?') ####
         self.ev_1.setLayout(qtw.QVBoxLayout())
         self.ev.layout().addWidget(self.ev_1)
 
@@ -1132,18 +1132,18 @@ class MainWindow(qtw.QWidget):
         self.ev_1.layout().addWidget(self.check_box, alignment=qtc.Qt.AlignmentFlag.AlignRight)
 
         # add a label for the slider
-        self.slider_label = qtw.QLabel('Semantic similarity: '+str(self.slider.value()/100))
+        self.slider_label = qtw.QLabel('Sinonimia: '+str(self.slider.value()/100)) ###
         self.slider_label.setAlignment(qtc.Qt.AlignmentFlag.AlignCenter)
         self.ev_1.layout().addWidget(self.slider_label)
 
         # connect slider to label
-        self.slider.valueChanged.connect(lambda: self.slider_label.setText('Semantic similarity: '+str(self.slider.value()/100)))
+        self.slider.valueChanged.connect(lambda: self.slider_label.setText('Sinonimia: '+str(self.slider.value()/100)))
 
         # if the checkbox is checked, disable the slider and disable label
         self.check_box.stateChanged.connect(lambda: self.slider.setEnabled(not self.check_box.isChecked()))
         self.check_box.stateChanged.connect(lambda: self.slider_label.setEnabled(not self.check_box.isChecked()))
 
-        self.ev_2 = qtw.QGroupBox('Somiglianza tassonomica')
+        self.ev_2 = qtw.QGroupBox("Quanto uno è incluso nell'altro?")
         self.ev_2.setLayout(qtw.QVBoxLayout())
         self.ev.layout().addWidget(self.ev_2)
 
@@ -1158,19 +1158,19 @@ class MainWindow(qtw.QWidget):
         self.ev_2.layout().addWidget(self.check_box_2, alignment=qtc.Qt.AlignmentFlag.AlignRight)
 
         # add a label for the slider
-        self.slider_label_2 = qtw.QLabel('Taxonomic similarity: '+str(self.slider_2.value()/100))
+        self.slider_label_2 = qtw.QLabel('Relazione di inclusione: '+str(self.slider_2.value()/100))
         self.slider_label_2.setAlignment(qtc.Qt.AlignmentFlag.AlignCenter)
 
         self.ev_2.layout().addWidget(self.slider_label_2)
 
         # connect slider to label
-        self.slider_2.valueChanged.connect(lambda: self.slider_label_2.setText('Taxonomic similarity: '+str(self.slider_2.value()/100)))
+        self.slider_2.valueChanged.connect(lambda: self.slider_label_2.setText('Relazione di inclusione: '+str(self.slider_2.value()/100)))
 
         # if the checkbox is checked, disable the slider and disable label
         self.check_box_2.stateChanged.connect(lambda: self.slider_2.setEnabled(not self.check_box_2.isChecked()))
         self.check_box_2.stateChanged.connect(lambda: self.slider_label_2.setEnabled(not self.check_box_2.isChecked()))
 
-        self.ev_3 = qtw.QGroupBox('Somiglianza causale')
+        self.ev_3 = qtw.QGroupBox('Quanto entrambi appartengono ad un insieme comune?')
         self.ev_3.setLayout(qtw.QVBoxLayout())
         self.ev.layout().addWidget(self.ev_3)
 
@@ -1185,12 +1185,12 @@ class MainWindow(qtw.QWidget):
         self.ev_3.layout().addWidget(self.check_box_3, alignment=qtc.Qt.AlignmentFlag.AlignRight)
 
         # add a label for the slider
-        self.slider_label_3 = qtw.QLabel('Causal similarity: '+str(self.slider_3.value()/100))
+        self.slider_label_3 = qtw.QLabel('Insieme comune: '+str(self.slider_3.value()/100))
         self.slider_label_3.setAlignment(qtc.Qt.AlignmentFlag.AlignCenter)
         self.ev_3.layout().addWidget(self.slider_label_3)
 
         # connect slider to label
-        self.slider_3.valueChanged.connect(lambda: self.slider_label_3.setText('Causal similarity: '+str(self.slider_3.value()/100)))
+        self.slider_3.valueChanged.connect(lambda: self.slider_label_3.setText('Insieme comune: '+str(self.slider_3.value()/100)))
         
         # if the checkbox is checked, disable the slider and disable label
         self.check_box_3.stateChanged.connect(lambda: self.slider_3.setEnabled(not self.check_box_3.isChecked()))
