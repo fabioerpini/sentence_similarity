@@ -1151,7 +1151,7 @@ class MainWindow(qtw.QWidget):
     
         self.evaluations = self.load_evaluations()
         self.choices= self.load_data()
-        print(self.evaluations)
+
 
         logout_button = qtw.QPushButton('Logout', clicked = self.logout)
 
