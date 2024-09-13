@@ -33,21 +33,35 @@ class MainWindow(qtw.QWidget):
         if not os.path.exists('data/temp'):
             os.mkdir('data/temp')
         super().__init__()
-        self.slider = qtw.QSlider()
-        self.check_box = qtw.QCheckBox()
+        self.evaluations = {}
+        self.phase1_box = qtw.QGroupBox()
+        self.phase2_box = qtw.QGroupBox()
+        self.phase3_box = qtw.QGroupBox()
+        if self.phase1_box.layout() is None:
+            self.phase1_box.setLayout(qtw.QVBoxLayout())
+        if self.phase2_box.layout() is None:
+            self.phase2_box.setLayout(qtw.QVBoxLayout())
+        if self.phase3_box.layout() is None:
+            self.phase3_box.setLayout(qtw.QVBoxLayout())
+        self.slider_1A = qtw.QSlider()
+        self.slider_1B = qtw.QSlider()
+        self.slider_2A = qtw.QSlider()
+        self.slider_2B = qtw.QSlider()
+        self.slider_3A = qtw.QSlider()
         self.slider_label = qtw.QLabel()
         self.slider_2 = qtw.QSlider()
-        self.check_box_2 = qtw.QCheckBox()
+
         self.slider_label_2 = qtw.QLabel()
         self.slider_3 = qtw.QSlider()
-        self.check_box_3 = qtw.QCheckBox()
         self.slider_label_3 = qtw.QLabel()
         self.message_label = qtw.QLabel()
 
         self.setWindowTitle('Semantic Similarity')
         self.showMaximized()
+        self.setFixedSize(self.width(), self.height())
 
         self.setLayout(qtw.QVBoxLayout())
+
         self.login_page()
 
     def login_page(self, message = ''):
@@ -123,20 +137,16 @@ class MainWindow(qtw.QWidget):
                 pass
         else:
             self.dict = {}
+        
         if settings['choice_method'] == 'random_in_subscale':
-            if os.path.exists('data/temp/random_in_subscale_'+settings['selected_subscale']+'_choices.csv'):
-                pass
-            else:
+            if not os.path.exists('data/temp/random_in_subscale_'+settings['selected_subscale']+'_choices.csv'):
                 self.create_choices()
         else:
-            if os.path.exists('data/temp/random_choices.csv'):
-                pass
-            else:
+            if os.path.exists('data/temp/'+settings['choice_method']+'_choices.csv') == False:
                 self.create_choices()
-            if os.path.exists('data/temp/sequential_choices.csv'):
-                pass
-            else:
+            if os.path.exists('data/temp/'+settings['choice_method']+'_choices.csv') == False:
                 self.create_choices()
+        
 
         header = qtw.QLabel('Welcome,\n'+username)
 
@@ -196,53 +206,88 @@ class MainWindow(qtw.QWidget):
                             items = (eval_data['item1'], eval_data['item2'])
                             if items not in self.evaluations:
                                 self.evaluations[items] = {}
-                                if eval_data['semantically'] != 'No annotation':
-                                    self.evaluations[items]['semantically'] = [float(eval_data['semantically'])]
-                                #else:
-                                #    self.evaluations[items]['semantically'] = [0.5]
-                                if eval_data['taxonomically'] != 'No annotation':
-                                    self.evaluations[items]['taxonomically'] = [float(eval_data['taxonomically'])]
-                                #else:
-                                #    self.evaluations[items]['taxonomically'] = [0.5]
-                                if eval_data['causally'] != 'No annotation':
-                                    self.evaluations[items]['causally'] = [float(eval_data['causally'])]
-                                #else:
-                                #    self.evaluations[items]['causally'] = [0.5]
-                            else:
-                                if eval_data['semantically'] != 'No annotation':
-                                    self.evaluations[items]['semantically'].append(float(eval_data['semantically']))
-                                #else:
-                                #    self.evaluations[items]['semantically'].append(0.5)
-                                if eval_data['taxonomically'] != 'No annotation':
-                                    self.evaluations[items]['taxonomically'].append(float(eval_data['taxonomically']))
-                                #else:
-                                #    self.evaluations[items]['taxonomically'].append(0.5)
-                                if eval_data['causally'] != 'No annotation':
-                                    self.evaluations[items]['causally'].append(float(eval_data['causally']))
-                                #else:
-                                #    self.evaluations[items]['causally'].append(0.5)
+                            if '1A' in eval_data:
+                                if '1A' not in self.evaluations[items]:
+                                    self.evaluations[items]['1A'] = []
+                                self.evaluations[items]['1A'].append(eval_data['1A'])
+                            if '1B' in eval_data:
+                                if '1B' not in self.evaluations[items]:
+                                    self.evaluations[items]['1B'] = []
+                                self.evaluations[items]['1B'].append(eval_data['1B'])
+                            if '1C' in eval_data:
+                                if '1C' not in self.evaluations[items]:
+                                    self.evaluations[items]['1C'] = []
+                                self.evaluations[items]['1C'].append(eval_data['1C'])
+                            if '2A' in eval_data:
+                                if '2A' not in self.evaluations[items]:
+                                    self.evaluations[items]['2A'] = []
+                                self.evaluations[items]['2A'].append(eval_data['2A'])
+                            if '2B' in eval_data:
+                                if '2B' not in self.evaluations[items]:
+                                    self.evaluations[items]['2B'] = []
+                                self.evaluations[items]['2B'].append(eval_data['2B'])
+                            if '2C' in eval_data:
+                                if '2C' not in self.evaluations[items]:
+                                    self.evaluations[items]['2C'] = []
+                                self.evaluations[items]['2C'].append(eval_data['2C'])
+                            if '3A' in eval_data:
+                                if '3A' not in self.evaluations[items]:
+                                    self.evaluations[items]['3A'] = []
+                                self.evaluations[items]['3A'].append(eval_data['3A'])
+                            if '3B' in eval_data:
+                                if '3B' not in self.evaluations[items]:
+                                    self.evaluations[items]['3B'] = []
+                                self.evaluations[items]['3B'].append(eval_data['3B'])
 
+
+                        
         for items in self.evaluations:
-            if 'semantically' in self.evaluations[items]:
-                self.evaluations[items]['semantically_average'] = round(mean(self.evaluations[items]['semantically']),2)
-            else:
-                self.evaluations[items]['semantically_average'] = 'No annotation'
-            if 'taxonomically' in self.evaluations[items]:
-                self.evaluations[items]['taxonomically_average'] = round(mean(self.evaluations[items]['taxonomically']),2)
-            else:
-                self.evaluations[items]['taxonomically_average'] = 'No annotation'
-            if 'causally' in self.evaluations[items]:
-                self.evaluations[items]['causally_average'] = round(mean(self.evaluations[items]['causally']),2)
-            else:
-                self.evaluations[items]['causally_average'] = 'No annotation'
             item = qtw.QGroupBox()
             item.setLayout(qtw.QVBoxLayout())
             self.evaluations_layout.addWidget(item, alignment=qtc.Qt.AlignmentFlag.AlignTop)
             item.layout().addWidget(qtw.QLabel('Item 1: '+items[0]))
             item.layout().addWidget(qtw.QLabel('Item 2: '+items[1]))
-            item.layout().addWidget(qtw.QLabel('Semantic similarity: '+str(self.evaluations[items]['semantically_average'])))
-            item.layout().addWidget(qtw.QLabel('Taxonomic similarity: '+str(self.evaluations[items]['taxonomically_average'])))
-            item.layout().addWidget(qtw.QLabel('Causal similarity: '+str(self.evaluations[items]['causally_average'])))
+            phase1_box = qtw.QGroupBox('Stesso significato o significato opposto?')
+            phase1_box.setLayout(qtw.QVBoxLayout())
+            item.layout().addWidget(phase1_box)
+            phase2_box = qtw.QGroupBox('Uno sottoinsieme dell’altro?')
+            phase2_box.setLayout(qtw.QVBoxLayout())
+            item.layout().addWidget(phase2_box)
+            phase3_box = qtw.QGroupBox('Sovrainsieme comune?')
+            phase3_box.setLayout(qtw.QVBoxLayout())
+            item.layout().addWidget(phase3_box)
+            phase1_box.setHidden(True)
+            phase2_box.setHidden(True)
+            phase3_box.setHidden(True)
+            if '1A' in self.evaluations[items]:
+                phase1_box.layout().addWidget(qtw.QLabel('Quanto le seguenti due frasi hanno lo stesso significato? '+ str(round(mean(self.evaluations[items]['1A']),2))+ ' => ' + str(round((mean(self.evaluations[items]['1A'])-1)/4,2))))
+                phase1_box.setHidden(False)
+            if '1B' in self.evaluations[items]:
+                phase1_box.layout().addWidget(qtw.QLabel('Quanto le seguenti due frasi hanno un significato opposto? '+str(round(mean(self.evaluations[items]['1B']),2))+ ' => ' + str(round((mean(self.evaluations[items]['1B'])-1)/4,2))))
+                phase1_box.setHidden(False)
+            if '1C' in self.evaluations[items]:
+                phase1_box.layout().addWidget(qtw.QLabel('Non c’è per niente questo tipo di relazione tra item A e item B:'+str(len(self.evaluations[items]['1C']))))
+                phase1_box.setHidden(False)
+            if '2A' in self.evaluations[items]:
+                phase2_box.layout().addWidget(qtw.QLabel('Quanto la cosa di cui si parla in A è più generale e include ciò di cui si parla in B? '+str(round(mean(self.evaluations[items]['2A']),2))+ ' => ' + str(round((mean(self.evaluations[items]['2A'])-1)/4,2))))
+                phase2_box.setHidden(False)
+            if '2B' in self.evaluations[items]:
+                phase2_box.layout().addWidget(qtw.QLabel('Quanto la cosa di cui si parla in B è più generale e include ciò di cui si parla in A? '+str(round(mean(self.evaluations[items]['2B']),2))+ ' => ' + str(round((mean(self.evaluations[items]['2B'])-1)/4,2))))
+                phase2_box.setHidden(False)
+            if '2C' in self.evaluations[items]:
+                phase2_box.layout().addWidget(qtw.QLabel('Non c’è per niente questo tipo di relazione: '+str(len(self.evaluations[items]['2C']))))
+                phase2_box.setHidden(False)
+            if '3A' in self.evaluations[items]:
+                phase3_box.layout().addWidget(qtw.QLabel('Quanto le seguenti due frasi parlano di cose che fanno riferimento a una categoria comune un po’ più generale? '+ str(round(mean(self.evaluations[items]['3A']),2))+ ' => ' + str(round((mean(self.evaluations[items]['3A'])-1)/4,2))))
+                phase3_box.setHidden(False)
+            if '3B' in self.evaluations[items]:
+                phase3_box.layout().addWidget(qtw.QLabel('A e B non fanno parte per niente di una categoria comune di cose/attività un più generale: '+str(len(self.evaluations[items]['3B']))))
+                phase3_box.setHidden(False)
+
+
+                                
+
+        
             '''
             if 'T5' in self.evaluations[items]:
                 item.layout().addWidget(qtw.QLabel('T5 similarity: '+str(self.evaluations[items]['T5'])))
@@ -251,10 +296,10 @@ class MainWindow(qtw.QWidget):
                 T5_button.clicked.connect(lambda checked,item1=items[0], item2=items[1],item=item, button=T5_button, filename=i: self.run_T5({'item1': item1, 'item2': item2},item,button, filename))
                 item.layout().addWidget(T5_button)
             '''
-        T5_mae_button = qtw.QPushButton('Run T5 and calculate MAE')
-        T5_mae_button.clicked.connect(self.T5_mae)
+        self.T5_mae_button = qtw.QPushButton('Run T5 and calculate MAE')
+        self.T5_mae_button.clicked.connect(self.T5_mae)
 
-        self.evaluations_tab.layout().addWidget(T5_mae_button, alignment=qtc.Qt.AlignmentFlag.AlignBottom)
+        self.evaluations_tab.layout().addWidget(self.T5_mae_button, alignment=qtc.Qt.AlignmentFlag.AlignBottom)
 
 
         for subscale in self.dict:
@@ -335,31 +380,33 @@ class MainWindow(qtw.QWidget):
         self.evaluations_tab.layout().addWidget(progress_bar)
         progress_bar.setRange(0, len(self.evaluations))
         x = False
-
         for items in self.evaluations:
             if 'T5' not in self.evaluations[items]:
                 x = True
                 item1 = items[0]
                 item2 = items[1]
 
-                # update progress bar
                 progress_bar.setValue(progress_bar.value() + 1)
 
                 qtw.QApplication.processEvents()
                 
-                # add a sleep to simulate the time it takes to run the T5 model
-
-
-
-
-
-
                 model = T5_model()
                 embeddings = model.encode([item1, item2], convert_to_tensor=True)
                 similarity = util.pytorch_cos_sim(embeddings[0], embeddings[1])
                 self.evaluations[items]['T5'] = round(similarity.item(),2)
         
         progress_bar.deleteLater()
+
+        T5_values = []
+        human_values = []
+        A1 = []
+        A2 = []
+        A3 = []
+        B1 = []
+        B2 = []
+        B3 = []
+        C1 = []
+        C2 = []
                 
 
         # update evaluation layout
@@ -371,59 +418,113 @@ class MainWindow(qtw.QWidget):
                 self.evaluations_layout.addWidget(item, alignment=qtc.Qt.AlignmentFlag.AlignTop)
                 item.layout().addWidget(qtw.QLabel('Item 1: '+items[0]))
                 item.layout().addWidget(qtw.QLabel('Item 2: '+items[1]))
-                item.layout().addWidget(qtw.QLabel('Semantic similarity: '+str(self.evaluations[items]['semantically_average'])))
-                item.layout().addWidget(qtw.QLabel('Taxonomic similarity: '+str(self.evaluations[items]['taxonomically_average'])))
-                item.layout().addWidget(qtw.QLabel('Causal similarity: '+str(self.evaluations[items]['causally_average'])))
-                item.layout().addWidget(qtw.QLabel('T5 similarity: '+str(self.evaluations[items]['T5'])))
-        
+                phase1_box = qtw.QGroupBox('Stesso significato o significato opposto?')
+                phase1_box.setLayout(qtw.QVBoxLayout())
+                item.layout().addWidget(phase1_box)
+                phase2_box = qtw.QGroupBox('Uno sottoinsieme dell’altro?')
+                phase2_box.setLayout(qtw.QVBoxLayout())
+                item.layout().addWidget(phase2_box)
+                phase3_box = qtw.QGroupBox('Sovrainsieme comune?')
+                phase3_box.setLayout(qtw.QVBoxLayout())
+                item.layout().addWidget(phase3_box)
+                phase1_box.setHidden(True)
+                phase2_box.setHidden(True)
+                phase3_box.setHidden(True)
+                T5_box = qtw.QGroupBox('T5 similarity')
+                T5_box.setLayout(qtw.QVBoxLayout())
+                item.layout().addWidget(T5_box)
+                if '1A' in self.evaluations[items]:
+                    phase1_box.layout().addWidget(qtw.QLabel('Quanto le seguenti due frasi hanno lo stesso significato? '+ str(round(mean(self.evaluations[items]['1A']),2))+ ' => ' + str(round((mean(self.evaluations[items]['1A'])-1)/4,2))))
+                    A1.extend(self.evaluations[items]['1A'])
+                    phase1_box.setHidden(False)
+                if '1B' in self.evaluations[items]:
+                    phase1_box.layout().addWidget(qtw.QLabel('Quanto le seguenti due frasi hanno un significato opposto? '+str(round(mean(self.evaluations[items]['1B']),2))+ ' => ' + str(round((mean(self.evaluations[items]['1B'])-1)/4,2))))
+                    B1.extend(self.evaluations[items]['1B'])
+                    phase1_box.setHidden(False)
+                if '1C' in self.evaluations[items]:
+                    phase1_box.layout().addWidget(qtw.QLabel('Non c’è per niente questo tipo di relazione tra item A e item B: '+str(len(self.evaluations[items]['1C']))))
+                    C1.extend(self.evaluations[items]['1C'])
+                    phase1_box.setHidden(False)
+                if '2A' in self.evaluations[items]:
+                    phase2_box.layout().addWidget(qtw.QLabel('Quanto la cosa di cui si parla in A è più generale e include ciò di cui si parla in B? '+str(round(mean(self.evaluations[items]['2A']),2))+ ' => ' + str(round((mean(self.evaluations[items]['2A'])-1)/4,2))))
+                    A2.extend(self.evaluations[items]['2A'])
+                    phase2_box.setHidden(False)
+                if '2B' in self.evaluations[items]:
+                    phase2_box.layout().addWidget(qtw.QLabel('Quanto la cosa di cui si parla in B è più generale e include ciò di cui si parla in A? '+str(round(mean(self.evaluations[items]['2B']),2))+ ' => ' + str(round((mean(self.evaluations[items]['2B'])-1)/4,2))))
+                    B2.extend(self.evaluations[items]['2B'])
+                    phase2_box.setHidden(False)
+                if '2C' in self.evaluations[items]:
+                    phase2_box.layout().addWidget(qtw.QLabel('Non c’è per niente questo tipo di relazione: '+str(len(self.evaluations[items]['2C']))))
+                    C2.extend(self.evaluations[items]['2C'])
+                    phase2_box.setHidden(False)
+                if '3A' in self.evaluations[items]:
+                    phase3_box.layout().addWidget(qtw.QLabel('Quanto le seguenti due frasi parlano di cose che fanno riferimento a una categoria comune un po’ più generale? '+ str(round(mean(self.evaluations[items]['3A']),2))+ ' => ' + str(round((mean(self.evaluations[items]['3A'])-1)/4,2))))
+                    A3.extend(self.evaluations[items]['3A'])
+                    phase3_box.setHidden(False)
+                if '3B' in self.evaluations[items]:
+                    phase3_box.layout().addWidget(qtw.QLabel('A e B non fanno parte per niente di una categoria comune di cose/attività un più generale: '+str(len(self.evaluations[items]['3B']))))
+                    B3.extend(self.evaluations[items]['3B'])
+                    phase3_box.setHidden(False)
+                if 'T5' in self.evaluations[items]:
+                    x = str(round((self.evaluations[items]['T5']*4)+1,2))
+                    if float(x) > 0:
+                        T5_box.layout().addWidget(qtw.QLabel('T5 similarity: '+x + ' => '+str(self.evaluations[items]['T5'])))
+                    else:
+                        T5_box.layout().addWidget(qtw.QLabel('T5 similarity: 0 => '+str(self.evaluations[items]['T5'])))
+                    T5_values.append(self.evaluations[items]['T5'])
+
 
         
 
-        
-        
+        # calculate MAE
+        if A1:
+            A1 = mean(A1)
+            human_values.append(A1)
 
 
+        if A2:
+            A2 = mean(A2)
+            human_values.append(A2)
 
+        if A3:
+            A3 = len(A3)
+        if B1:
+            B1 = mean(B1)
+            human_values.append(B1)
+        if B2:
+            B2 = mean(B2)
+            human_values.append(B2)
+        if B3:
+            B3 = len(B3)
+        if C1:
+            C1 = mean(C1)
+            human_values.append(C1)
+        if C2:
+            C2 = len(C2)
 
-        semantically = []
-        taxonomically = []
-        causally = []
-        T5 = []
-        for items in self.evaluations:
-            if 'semantically' in self.evaluations[items]:
-                semantically.append(self.evaluations[items]['semantically_average'])
-            if 'taxonomically' in self.evaluations[items]:
-                taxonomically.append(self.evaluations[items]['taxonomically_average'])
-            if 'causally' in self.evaluations[items]:
-                causally.append(self.evaluations[items]['causally_average'])
-            if 'T5' in self.evaluations[items]:
-                T5.append(self.evaluations[items]['T5'])
-        if len(semantically) > 1 and len(taxonomically) > 1 and len(causally) > 1 and len(T5) > 1:
-            mae_semantically = round(mean_absolute_error(semantically, T5),2)
-            mae_taxonomically = round(mean_absolute_error(taxonomically, T5),2)
-            mae_causally = round(mean_absolute_error(causally, T5),2)
-            #pearson_semantically = pearsonr(semantically, T5).correlation
-            #pearson_taxonomically = pearsonr(taxonomically, T5).correlation
-            #pearson_causally = pearsonr(causally, T5).correlation
-            smaller = min(mae_semantically, mae_taxonomically, mae_causally)
-            label = ''
-            if smaller == mae_semantically:
-                label = 'Semantically'
-            elif smaller == mae_taxonomically:
-                label = 'Taxonomically'
-            elif smaller == mae_causally:
-                label = 'Causally'
-            self.message_label.setText('Smallest MAE: '+label+'\n'+str(smaller))
-            self.message_label.setFixedSize(200, 50)
-            self.message_label.move(self.width() - self.message_label.width() - 20, 20)  # Position the message label at top-right
-            self.message_label.setVisible(True)
-            qtc.QTimer.singleShot(10000, lambda: self.message_label.setVisible(False))
+        if T5_values:
+            T5_values = round(mean(T5_values),2)
+
+        if human_values:
+            human_values = mean(human_values)
+            if human_values > 0:
+                human_values = round((human_values-1)/4,2)
+
+        if T5_values and human_values:
+            mae = round(mean_absolute_error([human_values], [T5_values]),2)
+
+            self.evaluations_tab.layout().addWidget(qtw.QLabel('Mean absolute error: '+str(mae)))
+
         else:
-            self.message_label.setText('Not enough data for evaluation')
-            self.message_label.setFixedSize(300, 50)
-            self.message_label.move(self.width() - self.message_label.width() - 20, 20)
-            self.message_label.setVisible(True)
-            qtc.QTimer.singleShot(3000, lambda: self.message_label.setVisible(False))
+            self.evaluations_tab.layout().addWidget(qtw.QLabel('No evaluations to calculate MAE'))
+            # hide button if there are no evaluations
+        self.T5_mae_button.setVisible(False)
+
+
+
+
+
+
             
 
     def admin_settings(self):
@@ -1039,205 +1140,423 @@ class MainWindow(qtw.QWidget):
     def user_page(self, username):
         if DEBUG:
             print('User page')
+
         self.clearLayout(self.layout())
         self.username = username
+
+
 
         with open('settings.json', 'r', encoding='utf-8') as file:
             self.settings = json.load(file)
     
         self.evaluations = self.load_evaluations()
         self.choices= self.load_data()
-
-        if self.choices == {}:
-            if self.settings['choice_method'] == 'random' or self.settings['choice_method'] == 'sequential':
-                if os.path.exists('data/temp/'+self.settings['choice_method']+'_choices.csv'):
-                    os.remove('data/temp/'+self.settings['choice_method']+'_choices.csv')
-            elif self.settings['choice_method'] == 'random_in_subscale':
-                if os.path.exists('data/temp/random_in_subscale_'+self.settings['selected_subscale']+'_choices.csv'):
-                    os.remove('data/temp/random_in_subscale_'+self.settings['selected_subscale']+'_choices.csv')
-            self.create_choices()
-            self.choices = self.load_data()
-
-        self.current_index = 0
-
-        header = qtw.QLabel('Welcome,\n'+username)
-        header.setAlignment(qtc.Qt.AlignmentFlag.AlignLeft)
-        self.layout().addWidget(header)
-
-        self.label1 = qtw.QLabel()
-        self.label2 = qtw.QLabel()
-        self.label1.setAlignment(qtc.Qt.AlignmentFlag.AlignCenter)
-        self.label2.setAlignment(qtc.Qt.AlignmentFlag.AlignCenter)
-
-        self.label1.setWordWrap(True)
-        self.label2.setWordWrap(True)
-
-        self.label1.setSizePolicy(qtw.QSizePolicy.Policy.Expanding, qtw.QSizePolicy.Policy.Expanding)
-        self.label2.setSizePolicy(qtw.QSizePolicy.Policy.Expanding, qtw.QSizePolicy.Policy.Expanding)
-
-        self.btn_next = qtw.QPushButton('-->\nNext', clicked = self.next_choice)
-        self.btn_back = qtw.QPushButton('<--\nBack', clicked = self.previous_choice)
-
-        self.update_labels()
-                
-        self.layout_buttons = qtw.QVBoxLayout()
+        print(self.evaluations)
 
         logout_button = qtw.QPushButton('Logout', clicked = self.logout)
-        self.layout_buttons.addWidget(logout_button, alignment=qtc.Qt.AlignmentFlag.AlignBottom)
-        save_button = qtw.QPushButton('Save and exit', clicked = self.save)
-        self.layout_buttons.layout().addWidget(save_button)
 
-        self.principal_layout = qtw.QHBoxLayout()
-        self.principal_layout.addLayout(self.layout_buttons)
+
+        if self.choices == {}:
+            self.layout().addWidget(qtw.QLabel('No choices available\nContact the administrator'), alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+            self.layout().addWidget(logout_button, alignment=qtc.Qt.AlignmentFlag.AlignBottom)
+        else:
+
+            self.current_index = 0
+
+            header = qtw.QLabel('Welcome,\n'+username)
+            header.setAlignment(qtc.Qt.AlignmentFlag.AlignLeft)
+            self.layout().addWidget(header)
+
+            self.label1 = qtw.QLabel()
+            self.label2 = qtw.QLabel()
+            self.label1.setAlignment(qtc.Qt.AlignmentFlag.AlignCenter)
+            self.label2.setAlignment(qtc.Qt.AlignmentFlag.AlignCenter)
+
+            self.label1.setWordWrap(True)
+            self.label2.setWordWrap(True)
+
+            #self.label1.setSizePolicy(qtw.QSizePolicy.Policy.Expanding, qtw.QSizePolicy.Policy.Expanding)
+            #self.label2.setSizePolicy(qtw.QSizePolicy.Policy.Expanding, qtw.QSizePolicy.Policy.Expanding)
+
+            self.btn_next = qtw.QPushButton('-->\nNext', clicked = self.next_choice)
+            self.btn_back = qtw.QPushButton('<--\nBack', clicked = self.previous_choice)
+
+            self.update_labels()
+                    
+            self.layout_buttons = qtw.QVBoxLayout()
+
+            
+            self.layout_buttons.addWidget(logout_button, alignment=qtc.Qt.AlignmentFlag.AlignBottom)
+            save_button = qtw.QPushButton('Save and exit', clicked = self.save)
+            self.layout_buttons.layout().addWidget(save_button)
+
+            self.principal_layout = qtw.QHBoxLayout()
+            self.principal_layout.addLayout(self.layout_buttons)
+            
+            # add tabs 'Evaluate', 'Your evaluations'
+            self.tabs = qtw.QTabWidget()
+            evaluate_tab = qtw.QWidget()
+            self.your_evaluations_tab = qtw.QWidget()
+            if self.your_evaluations_tab.layout() is None:
+                self.your_evaluations_tab.setLayout(qtw.QVBoxLayout())
+
+            self.tabs.addTab(evaluate_tab, 'Evaluate')
+            self.tabs.addTab(self.your_evaluations_tab, 'Your evaluations')
+
+            
+
+            # add widgets to evaluate tab
+            evaluate_tab.setLayout(qtw.QVBoxLayout())
+
+            self.ev = qtw.QVBoxLayout()
+
+            item1 = qtw.QGroupBox('Item A')
+            item1.setLayout(qtw.QVBoxLayout())
+            self.ev.layout().addWidget(item1)
+
+            item1.layout().addWidget(self.label1)
+
+            item2 = qtw.QGroupBox('Item B')
+            item2.setLayout(qtw.QVBoxLayout())
+            self.ev.layout().addWidget(item2)
+
+            #add spacing between the two items
+            self.ev.addSpacing(50)
+
+            item2.layout().addWidget(self.label2)
+            self.phase1_box = qtw.QGroupBox()
+            self.phase1_box.setLayout(qtw.QVBoxLayout())
+            
+            self.phase1_box.setTitle('Stesso significato o significato opposto?')
+            self.ev.addWidget(self.phase1_box)
+
+
+
+
+            radio_1A = qtw.QRadioButton('1)	Item A ha, almeno in piccola parte, lo stesso significato di item B')
+            radio_1B = qtw.QRadioButton('2)	Item A ha, almeno in piccola parte, un significato opposto ad item B')
+            radio_1C = qtw.QRadioButton('3)	Non c’è per niente questo tipo di relazione tra item A e item B')
+
+            radio_1A.toggled.connect(lambda: self.update_radio1A(self.phase1_box))
+            radio_1B.toggled.connect(lambda: self.update_radio1B(self.phase1_box))
+            radio_1C.toggled.connect(lambda: self.update_evaluation('1C', 0))
+
+
+            self.phase1_box.layout().addWidget(radio_1A)
+            self.phase1_box.layout().addWidget(radio_1B)
+            self.phase1_box.layout().addWidget(radio_1C)
+
+            self.phase2_box = qtw.QGroupBox()
+            self.phase2_box.setLayout(qtw.QVBoxLayout())
+            self.phase2_box.setTitle('Uno sottoinsieme dell’altro?')
+            self.ev.addWidget(self.phase2_box)
+
+            radio_2A = qtw.QRadioButton('1)	La cosa di cui si parla in item A è più generale e include, almeno in piccola parte, B')
+            radio_2B = qtw.QRadioButton('2)	La cosa di cui si parla in B è più generale e include, almeno in piccola parte, A')
+            radio_2C = qtw.QRadioButton('3)	Non c’è per niente questo tipo di relazione')
+
+            self.phase2_box.layout().addWidget(radio_2A)
+            self.phase2_box.layout().addWidget(radio_2B)
+            self.phase2_box.layout().addWidget(radio_2C)
+
+            radio_2A.toggled.connect(lambda: self.update_radio2A(self.phase2_box))
+            radio_2B.toggled.connect(lambda: self.update_radio2B(self.phase2_box))
+            radio_2C.toggled.connect(lambda: self.update_evaluation('2C', 0))
+
+            self.phase3_box = qtw.QGroupBox()
+            self.phase3_box.setLayout(qtw.QVBoxLayout())
+            self.phase3_box.setTitle('Sovrainsieme comune?')
+            self.ev.addWidget(self.phase3_box)
+
+            radio_3A = qtw.QRadioButton('1)	A e B appartengono, almeno in piccola parte, di una categoria comune di cose/attività un più generale.')
+            radio_3B = qtw.QRadioButton('2)	A e B non fanno parte per niente di una categoria comune di cose/attività un più generale.')
+
+            self.phase3_box.layout().addWidget(radio_3A)
+            self.phase3_box.layout().addWidget(radio_3B)
+
+            radio_3A.toggled.connect(lambda: self.update_radio3A(self.phase3_box))
+            radio_3B.toggled.connect(lambda: self.update_evaluation('3B', 0))
+
+
+            if self.evaluations:
+                self.update_values()
+
+
+
+            #self.update_values()
+            # add buttons to layout
+
+            self.button_layout = qtw.QHBoxLayout()
+            
+            #add progress bar
+            self.progress = qtw.QProgressBar()
+            self.progress.setValue(0)
+            self.progress.setMaximum(100)
+            self.progress.setAlignment(qtc.Qt.AlignmentFlag.AlignCenter)
+            #self.ev.addSpacing(50)
+            self.ev.addWidget(self.progress)
+
+            self.button_layout.addWidget(self.btn_back)
+            self.button_layout.addLayout(self.ev)
+            self.button_layout.addWidget(self.btn_next)
+
+            evaluate_tab.layout().addLayout(self.button_layout)
         
-        # add tabs 'Evaluate', 'Your evaluations'
-        self.tabs = qtw.QTabWidget()
-        evaluate_tab = qtw.QWidget()
-        self.your_evaluations_tab = qtw.QWidget()
-        self.tabs.addTab(evaluate_tab, 'Evaluate')
-        self.tabs.addTab(self.your_evaluations_tab, 'Your evaluations')
+            # add tabs to layout
+            self.principal_layout.addWidget(self.tabs)
 
-        # add widgets to evaluate tab
-        evaluate_tab.setLayout(qtw.QVBoxLayout())
+            codebook_button = qtw.QPushButton('Codebook')
+            self.principal_layout.addWidget(codebook_button, alignment=qtc.Qt.AlignmentFlag.AlignBottom)
+            codebook_button.clicked.connect(self.codebook)
 
-        self.ev = qtw.QVBoxLayout()
+            self.layout().addLayout(self.principal_layout)
 
-        item1 = qtw.QGroupBox('Item 1')
-        item1.setLayout(qtw.QVBoxLayout())
-        self.ev.layout().addWidget(item1)
+            # add widgets to your evaluations tab
+            self.your_evaluations_tab.setLayout(qtw.QVBoxLayout())
+            self.evaluations_layout = qtw.QVBoxLayout()
+            scroll_area = qtw.QScrollArea()
+            scroll_area.setWidgetResizable(True)
+            scroll_widget = qtw.QWidget()
+            scroll_widget.setLayout(self.evaluations_layout)
+            scroll_area.setWidget(scroll_widget)
+            self.your_evaluations_tab.layout().addWidget(scroll_area)
+            
+            self.tabs.setCurrentIndex(0)
+            self.tabs.currentChanged.connect(self.update_your_evaluations)
 
-        item1.layout().addWidget(self.label1)
-
-        item2 = qtw.QGroupBox('Item 2')
-        item2.setLayout(qtw.QVBoxLayout())
-        self.ev.layout().addWidget(item2)
-
-        #add spacing between the two items
-        self.ev.addSpacing(50)
-
-        item2.layout().addWidget(self.label2)
-
-        # add a box with slider for 'somiglianza semantica'
-        self.ev_1 = qtw.QGroupBox('Quanto sono sinonimi?') ####
-        self.ev_1.setLayout(qtw.QVBoxLayout())
-        self.ev.layout().addWidget(self.ev_1)
-
-        self.slider = qtw.QSlider(qtc.Qt.Orientation.Horizontal)
-        self.slider.setRange(0, 100)
-        self.slider.setValue(50)
-        self.slider.valueChanged.connect(self.update)
-
-        self.ev_1.layout().addWidget(self.slider)
-
-        self.check_box = qtw.QCheckBox("Can't annotate")
-        self.check_box.stateChanged.connect(self.update)
-        self.ev_1.layout().addWidget(self.check_box, alignment=qtc.Qt.AlignmentFlag.AlignRight)
-
-        # add a label for the slider
-        self.slider_label = qtw.QLabel('Sinonimia: '+str(self.slider.value()/100)) ###
-        self.slider_label.setAlignment(qtc.Qt.AlignmentFlag.AlignCenter)
-        self.ev_1.layout().addWidget(self.slider_label)
-
-        # connect slider to label
-        self.slider.valueChanged.connect(lambda: self.slider_label.setText('Sinonimia: '+str(self.slider.value()/100)))
-
-        # if the checkbox is checked, disable the slider and disable label
-        self.check_box.stateChanged.connect(lambda: self.slider.setEnabled(not self.check_box.isChecked()))
-        self.check_box.stateChanged.connect(lambda: self.slider_label.setEnabled(not self.check_box.isChecked()))
-
-        self.ev_2 = qtw.QGroupBox("Quanto uno è incluso nell'altro?")
-        self.ev_2.setLayout(qtw.QVBoxLayout())
-        self.ev.layout().addWidget(self.ev_2)
-
-        self.slider_2 = qtw.QSlider(qtc.Qt.Orientation.Horizontal)
-        self.slider_2.setRange(0, 100)
-        self.slider_2.setValue(50)
-        self.slider_2.valueChanged.connect(self.update)
-        self.ev_2.layout().addWidget(self.slider_2)
-
-        self.check_box_2 = qtw.QCheckBox("Can't annotate")
-        self.check_box_2.stateChanged.connect(self.update)
-        self.ev_2.layout().addWidget(self.check_box_2, alignment=qtc.Qt.AlignmentFlag.AlignRight)
-
-        # add a label for the slider
-        self.slider_label_2 = qtw.QLabel('Relazione di inclusione: '+str(self.slider_2.value()/100))
-        self.slider_label_2.setAlignment(qtc.Qt.AlignmentFlag.AlignCenter)
-
-        self.ev_2.layout().addWidget(self.slider_label_2)
-
-        # connect slider to label
-        self.slider_2.valueChanged.connect(lambda: self.slider_label_2.setText('Relazione di inclusione: '+str(self.slider_2.value()/100)))
-
-        # if the checkbox is checked, disable the slider and disable label
-        self.check_box_2.stateChanged.connect(lambda: self.slider_2.setEnabled(not self.check_box_2.isChecked()))
-        self.check_box_2.stateChanged.connect(lambda: self.slider_label_2.setEnabled(not self.check_box_2.isChecked()))
-
-        self.ev_3 = qtw.QGroupBox('Quanto entrambi appartengono ad un insieme comune?')
-        self.ev_3.setLayout(qtw.QVBoxLayout())
-        self.ev.layout().addWidget(self.ev_3)
-
-        self.slider_3 = qtw.QSlider(qtc.Qt.Orientation.Horizontal)
-        self.slider_3.setRange(0, 100)
-        self.slider_3.setValue(50)
-        self.slider_3.valueChanged.connect(self.update)
-        self.ev_3.layout().addWidget(self.slider_3)
-
-        self.check_box_3 = qtw.QCheckBox("Can't annotate")
-        self.check_box_3.stateChanged.connect(self.update)
-        self.ev_3.layout().addWidget(self.check_box_3, alignment=qtc.Qt.AlignmentFlag.AlignRight)
-
-        # add a label for the slider
-        self.slider_label_3 = qtw.QLabel('Insieme comune: '+str(self.slider_3.value()/100))
-        self.slider_label_3.setAlignment(qtc.Qt.AlignmentFlag.AlignCenter)
-        self.ev_3.layout().addWidget(self.slider_label_3)
-
-        # connect slider to label
-        self.slider_3.valueChanged.connect(lambda: self.slider_label_3.setText('Insieme comune: '+str(self.slider_3.value()/100)))
-        
-        # if the checkbox is checked, disable the slider and disable label
-        self.check_box_3.stateChanged.connect(lambda: self.slider_3.setEnabled(not self.check_box_3.isChecked()))
-        self.check_box_3.stateChanged.connect(lambda: self.slider_label_3.setEnabled(not self.check_box_3.isChecked()))
-        self.update_values()
-        # add buttons to layout
-
-        self.button_layout = qtw.QHBoxLayout()
-        
-        #add progress bar
-        self.progress = qtw.QProgressBar()
-        self.progress.setValue(0)
-        self.progress.setMaximum(100)
-        self.progress.setAlignment(qtc.Qt.AlignmentFlag.AlignCenter)
-        #self.ev.addSpacing(50)
-        self.ev.addWidget(self.progress)
-
-        self.button_layout.addWidget(self.btn_back)
-        self.button_layout.addLayout(self.ev)
-        self.button_layout.addWidget(self.btn_next)
-
-        evaluate_tab.layout().addLayout(self.button_layout)
+            self.submit_button = qtw.QPushButton('Submit and exit')
+            self.submit_button.clicked.connect(self.submit)
+            self.submit_button.setToolTip('Submit the evaluations and exit')
+            self.submit_button.setHidden(True)
+            self.your_evaluations_tab.layout().addWidget(self.submit_button, alignment=qtc.Qt.AlignmentFlag.AlignBottom)
     
-        # add tabs to layout
-        self.principal_layout.addWidget(self.tabs)
+    def update_radio1A(self, phase1_box):
+        if DEBUG:
+            print('Updating radio 1A')
+        self.clear_box(phase1_box)
+        x = self.phase1_box.frameSize().width()
+        y = self.phase1_box.frameSize().height()
+        self.slider_1A = qtw.QSlider(qtc.Qt.Orientation.Horizontal)
+        self.slider_1A.setRange(1,5)
+        self.slider_1A.setFixedSize(x-200, 30)
+        title = qtw.QLabel('Quanto le seguenti due frasi hanno lo stesso significato?')
+        title.setFixedSize(title.sizeHint())
+        self.slider_1A.valueChanged.connect(lambda: self.slider_label_1A.setText('Valore: '+str(self.slider_1A.value())))
+        self.slider_1A.valueChanged.connect(lambda: self.update_evaluation( '1A', self.slider_1A.value()))
 
-        codebook_button = qtw.QPushButton('Codebook')
-        self.principal_layout.addWidget(codebook_button, alignment=qtc.Qt.AlignmentFlag.AlignBottom)
-        codebook_button.clicked.connect(self.codebook)
+        self.slider_label_1A = qtw.QLabel('Valore: '+str(self.slider_1A.value()))
+        self.slider_label_1A.setFixedSize(self.slider_label_1A.sizeHint())
 
-        self.layout().addLayout(self.principal_layout)
-
-        # add widgets to your evaluations tab
-        self.your_evaluations_tab.setLayout(qtw.QVBoxLayout())
-        self.evaluations_layout = qtw.QVBoxLayout()
-        scroll_area = qtw.QScrollArea()
-        scroll_area.setWidgetResizable(True)
-        scroll_widget = qtw.QWidget()
-        scroll_widget.setLayout(self.evaluations_layout)
-        scroll_area.setWidget(scroll_widget)
-        self.your_evaluations_tab.layout().addWidget(scroll_area)
         
-        self.tabs.setCurrentIndex(0)
-        self.tabs.currentChanged.connect(self.update_your_evaluations)
+        phase1_box.layout().addWidget(title, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+        phase1_box.layout().addWidget(self.slider_1A, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+        
+        layout = qtw.QHBoxLayout()
+        #phase1_box.layout().addWidget(self.slider_label_1A, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+        back_button = qtw.QPushButton('Back')
+        back_button.setFixedSize(back_button.sizeHint())
+        layout.addWidget(back_button, alignment=qtc.Qt.AlignmentFlag.AlignLeft)
+        layout.addWidget(self.slider_label_1A, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+        phase1_box.layout().addLayout(layout)
+        back_button.clicked.connect(lambda: self.back_phase1(phase1_box, '1A'))
+        phase1_box.setFixedSize(x, y)
+
+
+
+    def back_phase1(self, phase1_box, previous = None):
+        self.clear_box(phase1_box)
+        radio_1A = qtw.QRadioButton('1)	Item A ha, almeno in piccola parte, lo stesso significato di item B')
+        radio_1B = qtw.QRadioButton('2)	Item A ha, almeno in piccola parte, un significato opposto ad item B')
+        radio_1C = qtw.QRadioButton('3)	Non c’è per niente questo tipo di relazione tra item A e item B')
+
+        radio_1A.toggled.connect(lambda: self.update_radio1A(phase1_box))
+        radio_1B.toggled.connect(lambda: self.update_radio1B(phase1_box))
+        radio_1C.toggled.connect(lambda: self.update_evaluation('1C', 0))
+
+        phase1_box.layout().addWidget(radio_1A)
+        phase1_box.layout().addWidget(radio_1B)
+        phase1_box.layout().addWidget(radio_1C)
+
+        if self.evaluations is None:
+            self.evaluations = {}
+
+        if previous is not None and previous in self.evaluations.get(self.current_index, {}):
+            
+            del self.evaluations[self.current_index][previous]
+
+
+
+
+        
+
+
+    def update_radio1B(self, phase1_box):
+        if DEBUG:
+            print('Updating radio 1B')
+        self.clear_box(phase1_box)
+        self.slider_1B = qtw.QSlider(qtc.Qt.Orientation.Horizontal)
+        self.slider_1B.setRange(1,5)
+        x = self.phase1_box.frameSize().width()
+        y = self.phase1_box.frameSize().height()
+        title = qtw.QLabel('Quanto le seguenti due frasi hanno un significato opposto?')
+        title.setFixedSize(title.sizeHint())
+        self.slider_1B.valueChanged.connect(lambda: self.slider_label_1B.setText('Valore: '+str(self.slider_1B.value())))
+        self.slider_1B.valueChanged.connect(lambda: self.update_evaluation( '1B', self.slider_1B.value()))
+        self.slider_1B.setFixedSize(x-200, 30)  
+        self.slider_label_1B = qtw.QLabel('Valore: '+str(self.slider_1B.value()))
+        self.slider_label_1B.setFixedSize(self.slider_label_1B.sizeHint())
+        
+        phase1_box.layout().addWidget(title, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+        phase1_box.layout().addWidget(self.slider_1B, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+        layout = qtw.QHBoxLayout()
+        #phase1_box.layout().addWidget(self.slider_label_1A, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+        back_button = qtw.QPushButton('Back')
+        back_button.setFixedSize(back_button.sizeHint())
+        layout.addWidget(back_button, alignment=qtc.Qt.AlignmentFlag.AlignLeft)
+        layout.addWidget(self.slider_label_1B, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+        phase1_box.layout().addLayout(layout)
+        back_button.clicked.connect(lambda: self.back_phase1(phase1_box, '1B'))
+        phase1_box.setFixedSize(x, y)
+
+    def update_radio2A(self, phase2_box):
+        if DEBUG:
+            print('Updating radio 2A')
+        self.clear_box(phase2_box)
+        self.slider_2A = qtw.QSlider(qtc.Qt.Orientation.Horizontal)
+        self.slider_2A.setRange(1,5)
+        x = self.phase2_box.frameSize().width()
+        y = self.phase2_box.frameSize().height()
+        title = qtw.QLabel('Quanto la cosa di cui si parla in A è più generale e include ciò di cui si parla in B?')
+        title.setFixedSize(title.sizeHint())
+        self.slider_2A.valueChanged.connect(lambda: self.slider_label_2A.setText('Valore: '+str(self.slider_2A.value())))
+        self.slider_2A.valueChanged.connect(lambda: self.update_evaluation( '2A', self.slider_2A.value()))
+        self.slider_label_2A = qtw.QLabel('Valore: '+str(self.slider_2A.value()))
+        self.slider_label_2A.setFixedSize(self.slider_label_2A.sizeHint())
+        self.slider_2A.setFixedSize(x-200, 30)
+        phase2_box.layout().addWidget(title, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+        phase2_box.layout().addWidget(self.slider_2A, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+
+        layout = qtw.QHBoxLayout()
+        #phase1_box.layout().addWidget(self.slider_label_1A, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+        back_button = qtw.QPushButton('Back')
+        back_button.setFixedSize(back_button.sizeHint())
+        layout.addWidget(back_button, alignment=qtc.Qt.AlignmentFlag.AlignLeft)
+        layout.addWidget(self.slider_label_2A, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+        phase2_box.layout().addLayout(layout)
+        back_button.clicked.connect(lambda: self.back_phase2(phase2_box, '2A'))
+        phase2_box.setFixedSize(x, y)
+
+    def update_radio2B(self, phase2_box):
+        if DEBUG:
+            print('Updating radio 2B')
+        self.clear_box(phase2_box)
+        self.slider_2B = qtw.QSlider(qtc.Qt.Orientation.Horizontal)
+        self.slider_2B.setRange(1,5)
+        x = self.phase2_box.frameSize().width()
+        y = self.phase2_box.frameSize().height()
+        title = qtw.QLabel('Quanto la cosa di cui si parla in B è più generale e include ciò di cui si parla in A?')
+        title.setFixedSize(title.sizeHint())
+        self.slider_2B.setFixedSize(x-200, 30)
+        self.slider_2B.valueChanged.connect(lambda: self.slider_label_2B.setText('Valore: '+str(self.slider_2B.value())))
+        self.slider_2B.valueChanged.connect(lambda: self.update_evaluation( '2B', self.slider_2B.value()))
+        self.slider_label_2B = qtw.QLabel('Valore: '+str(self.slider_2B.value()))
+        self.slider_label_2B.setFixedSize(self.slider_label_2B.sizeHint())
+        phase2_box.layout().addWidget(title, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+        phase2_box.layout().addWidget(self.slider_2B, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+        layout = qtw.QHBoxLayout()
+        #phase1_box.layout().addWidget(self.slider_label_1A, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+        back_button = qtw.QPushButton('Back')
+        back_button.setFixedSize(back_button.sizeHint())
+        layout.addWidget(back_button, alignment=qtc.Qt.AlignmentFlag.AlignLeft)
+        layout.addWidget(self.slider_label_2B, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+        phase2_box.layout().addLayout(layout)
+        back_button.clicked.connect(lambda: self.back_phase2(phase2_box, '2B'))
+        phase2_box.setFixedSize(x, y)
+
+    def back_phase2(self, phase2_box, previous = None):
+        self.clear_box(phase2_box)
+        radio_2A = qtw.QRadioButton('1)	La cosa di cui si parla in item A è più generale e include, almeno in piccola parte, B')
+        radio_2B = qtw.QRadioButton('2)	La cosa di cui si parla in B è più generale e include, almeno in piccola parte, A')
+        radio_2C = qtw.QRadioButton('3)	Non c’è per niente questo tipo di relazione')
+
+        phase2_box.layout().addWidget(radio_2A)
+        phase2_box.layout().addWidget(radio_2B)
+        phase2_box.layout().addWidget(radio_2C)
+
+        radio_2A.toggled.connect(lambda: self.update_radio2A(phase2_box))
+        radio_2B.toggled.connect(lambda: self.update_radio2B(phase2_box))
+        radio_2C.toggled.connect(lambda: self.update_evaluation('2C', 0))
+
+        if self.evaluations is None:
+            self.evaluations = {}
+
+        if previous is not None and previous in self.evaluations.get(self.current_index, {}):
+            del self.evaluations[self.current_index][previous]
+
+
+    def update_radio3A(self, phase3_box):
+        if DEBUG:
+            print('Updating radio 3A')
+        self.clear_box(phase3_box)
+        self.slider_3A = qtw.QSlider(qtc.Qt.Orientation.Horizontal)
+        self.slider_3A.setRange(1,5)
+        x = self.phase1_box.frameSize().width()
+        y = self.phase1_box.frameSize().height()
+        title = qtw.QLabel('Quanto le seguenti due frasi parlano di cose che fanno riferimento a una categoria comune un po’ più generale?')
+        title.setFixedSize(title.sizeHint())
+        self.slider_3A.setFixedSize(x-200, 30)
+        self.slider_3A.valueChanged.connect(lambda: self.slider_label_3A.setText('Valore: '+str(self.slider_3A.value())))
+        self.slider_3A.valueChanged.connect(lambda: self.update_evaluation( '3A', self.slider_3A.value()))
+        self.slider_label_3A = qtw.QLabel('Valore: '+str(self.slider_3A.value()))
+        self.slider_label_3A.setFixedSize(self.slider_label_3A.sizeHint())
+        phase3_box.layout().addWidget(title, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+        phase3_box.layout().addWidget(self.slider_3A, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+        layout = qtw.QHBoxLayout()
+        #phase1_box.layout().addWidget(self.slider_label_1A, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+        back_button = qtw.QPushButton('Back')
+        back_button.setFixedSize(back_button.sizeHint())
+        layout.addWidget(back_button, alignment=qtc.Qt.AlignmentFlag.AlignLeft)
+        layout.addWidget(self.slider_label_3A, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+        phase3_box.layout().addLayout(layout)
+        back_button.clicked.connect(lambda: self.back_phase3(phase3_box, '3A'))
+        phase3_box.setFixedSize(x, y)
+
+
+    def back_phase3(self, phase3_box, previous = None):
+        self.clear_box(phase3_box)
+        radio_3A = qtw.QRadioButton('1)	A e B appartengono, almeno in piccola parte, di una categoria comune di cose/attività un più generale.')
+        radio_3B = qtw.QRadioButton('2)	A e B non fanno parte per niente di una categoria comune di cose/attività un più generale.')
+
+        phase3_box.layout().addWidget(radio_3A)
+        phase3_box.layout().addWidget(radio_3B)
+
+        radio_3A.toggled.connect(lambda: self.update_radio3A(phase3_box))
+        radio_3B.toggled.connect(lambda: self.update_evaluation('3B', 0))
+
+        if self.evaluations is None:
+            self.evaluations = {}
+
+        if previous is not None and previous in self.evaluations.get(self.current_index, {}):
+            del self.evaluations[self.current_index][previous]
+
+
+        
     
+    def clear_box(self, box):
+    # Loop through each widget in the box's layout and remove it
+        if box.layout() is not None:
+            while box.layout().count():
+                child = box.layout().takeAt(0)
+                if child.widget():
+                    child.widget().deleteLater()
+                elif child.layout():
+                    self.clear_box(child.layout())
+
+
+
+
+        
+
     def codebook(self):
         from docx import Document
         # Create a new window for the codebook
@@ -1266,154 +1585,163 @@ class MainWindow(qtw.QWidget):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    def update(self):
+    def update_evaluation(self, phase, value):
+        if DEBUG:
+            print('Updating evaluation', phase, value)
         
-        semantically = self.slider.value()/100
-        taxonomically = self.slider_2.value()/100
-        causally = self.slider_3.value()/100
-        if self.check_box.isChecked():
-            semantically = 'No annotation'
-        if self.check_box_2.isChecked():
-            taxonomically = 'No annotation'
-        if self.check_box_3.isChecked():
-            causally = 'No annotation'
+        if self.evaluations is None:
+            self.evaluations = {}
 
-        self.evaluations[self.current_index] = {'item1': self.label1.text(), 'item2': self.label2.text(), 'semantically': str(semantically), 'taxonomically': str(taxonomically), 'causally': str(causally)}
+        if self.evaluations is not None and self.current_index in self.evaluations:
+            keys_to_remove = [i for i in self.evaluations[self.current_index] if i != 'item1' and i != 'item2' and i[0] == phase[0]]
+            for i in keys_to_remove:
+                del self.evaluations[self.current_index][i]
+            self.evaluations[self.current_index][phase] = value
+        else:
+            self.evaluations[self.current_index] = {'item1': self.choices[self.current_index][0].replace('\n',''), 'item2': self.choices[self.current_index][1].replace('\n',''), phase: value}
+
+
+
+
+
+
+
+
 
     def update_values(self):
         if self.current_index in self.evaluations:
-            eval_data = self.evaluations[self.current_index]
-            semantically = eval_data['semantically']
-            taxonomically = eval_data['taxonomically']
-            causally = eval_data['causally']
+            if '1A' in self.evaluations[self.current_index]:
+                self.update_radio1A(self.phase1_box)
+                self.slider_1A.setValue(int(self.evaluations[self.current_index]['1A']))
+            elif '1B' in self.evaluations[self.current_index]:
+                self.update_radio1B(self.phase1_box)
+                self.slider_1B.setValue(int(self.evaluations[self.current_index]['1B']))
+            elif '1C' in self.evaluations[self.current_index]:
+                self.back_phase1(self.phase1_box)
+                self.phase1_box.layout().itemAt(2).widget().setChecked(True)
+            if '2A' in self.evaluations[self.current_index]:
+                self.update_radio2A(self.phase2_box)
+                self.slider_2A.setValue(int(self.evaluations[self.current_index]['2A']))
+            elif '2B' in self.evaluations[self.current_index]:
+                self.update_radio2B(self.phase2_box)
+                self.slider_2B.setValue(int(self.evaluations[self.current_index]['2B']))
+            elif '2C' in self.evaluations[self.current_index]:
+                self.back_phase2(self.phase2_box)
+                self.phase2_box.layout().itemAt(2).widget().setChecked(True)
+            if '3A' in self.evaluations[self.current_index]:
+                self.update_radio3A(self.phase3_box)
+                self.slider_3A.setValue(int(self.evaluations[self.current_index]['3A']))
+            elif '3B' in self.evaluations[self.current_index]:
+                self.back_phase3(self.phase3_box)
+                self.phase3_box.layout().itemAt(1).widget().setChecked(True)
 
-            if semantically != 'No annotation':
-                self.slider.setValue(int(float(semantically) * 100))
-                self.check_box.setChecked(False)
-            else:
-                self.slider.setValue(50)
-                self.check_box.setChecked(True)
 
-            if taxonomically != 'No annotation':
-                self.slider_2.setValue(int(float(taxonomically) * 100))
-                self.check_box_2.setChecked(False)
-            else:
-                self.slider_2.setValue(50)
-                self.check_box_2.setChecked(True)
-
-            if causally != 'No annotation':
-                self.slider_3.setValue(int(float(causally) * 100))
-                self.check_box_3.setChecked(False)
-            else:
-                self.slider_3.setValue(50)
-                self.check_box_3.setChecked(True)
-        else:
-            # Set the default values without writing them to the evaluations dictionary
-            try:
-                self.slider.disconnect()
-                self.slider.setValue(50)
-                self.slider.valueChanged.connect(self.update)
-                self.slider.valueChanged.connect(lambda: self.slider_label.setText('Semantic similarity: '+str(self.slider.value()/100)))
-            
-
-                self.check_box.disconnect() 
-                self.check_box.setChecked(False)
-                self.check_box.stateChanged.connect(self.update)
-                self.slider.setEnabled(True)
-                self.slider_label.setEnabled(True)
-                self.check_box.stateChanged.connect(lambda: self.slider.setEnabled(not self.check_box.isChecked()))
-                self.check_box.stateChanged.connect(lambda: self.slider_label.setEnabled(not self.check_box.isChecked()))
-
-                self.slider_2.disconnect()
-                self.slider_2.setValue(50)
-                self.slider_2.valueChanged.connect(self.update)
-                self.slider_2.valueChanged.connect(lambda: self.slider_label_2.setText('Taxonomic similarity: '+str(self.slider_2.value()/100)))
-
-                self.check_box_2.disconnect()
-                self.check_box_2.setChecked(False)
-                self.slider_2.setEnabled(True)
-                self.slider_label_2.setEnabled(True)
-                self.check_box_2.stateChanged.connect(self.update)
-                self.check_box_2.stateChanged.connect(lambda: self.slider_2.setEnabled(not self.check_box_2.isChecked()))
-                self.check_box_2.stateChanged.connect(lambda: self.slider_label_2.setEnabled(not self.check_box_2.isChecked()))
-
-                self.slider_3.disconnect()
-                self.slider_3.setValue(50)
-                self.slider_3.valueChanged.connect(self.update)
-                self.slider_3.valueChanged.connect(lambda: self.slider_label_3.setText('Causal similarity: '+str(self.slider_3.value()/100)))
-                
-                self.check_box_3.disconnect()
-                self.check_box_3.setChecked(False)
-                self.slider_3.setEnabled(True)
-                self.slider_label_3.setEnabled(True)
-                self.check_box_3.stateChanged.connect(self.update)
-                self.check_box_3.stateChanged.connect(lambda: self.slider_3.setEnabled(not self.check_box_3.isChecked()))
-                self.check_box_3.stateChanged.connect(lambda: self.slider_label_3.setEnabled(not self.check_box_3.isChecked()))
-            except:
-                pass
 
     def update_your_evaluations(self):
         self.clearLayout(self.evaluations_layout)
         if self.tabs.currentIndex() == 1:
             if self.evaluations:
                 for i in self.evaluations:
-                    item = qtw.QGroupBox('Item '+str(i+1))
+                    item = qtw.QGroupBox('Evaluation '+str(i+1))
                     item.setLayout(qtw.QVBoxLayout())
 
-                    item.layout().addWidget(qtw.QLabel('Item 1: '+self.evaluations[i]['item1']))
-                    item.layout().addWidget(qtw.QLabel('Item 2: '+self.evaluations[i]['item2']))
-                    item.layout().addWidget(qtw.QLabel('Semantic similarity: '+self.evaluations[i]['semantically']))
-                    item.layout().addWidget(qtw.QLabel('Taxonomic similarity: '+self.evaluations[i]['taxonomically']))
-                    item.layout().addWidget(qtw.QLabel('Causal similarity: '+self.evaluations[i]['causally']))
+                    item.layout().addWidget(qtw.QLabel('Item A: '+self.evaluations[i]['item1']))
+                    item.layout().addWidget(qtw.QLabel('Item B: '+self.evaluations[i]['item2']))
+                    item.layout().addSpacing(20)
+                    phase1 = qtw.QGroupBox('Stesso significato o significato opposto?')
+                    phase1.setLayout(qtw.QVBoxLayout())
+                    item.layout().addWidget(phase1)
+                    phase1.setHidden(True)
+                    phase2 = qtw.QGroupBox('Uno sottoinsieme dell’altro?')
+                    phase2.setLayout(qtw.QVBoxLayout())
+                    item.layout().addWidget(phase2)
+                    phase2.setHidden(True)
+                    phase3 = qtw.QGroupBox('Sovrainsieme comune?')
+                    phase3.setLayout(qtw.QVBoxLayout())
+                    item.layout().addWidget(phase3)
+                    phase3.setHidden(True)
+                    
+
+                    if '1A' in self.evaluations[i]:
+                        phase1.layout().addWidget(qtw.QLabel('Quanto le seguenti due frasi hanno lo stesso significato? '+str(self.evaluations[i]['1A'])+'/5'))
+                        phase1.setHidden(False)
+                    if '1B' in self.evaluations[i]:
+                        phase1.layout().addWidget(qtw.QLabel('Quanto le seguenti due frasi hanno un significato opposto? '+str(self.evaluations[i]['1B'])+'/5'))
+                        phase1.setHidden(False)
+                    if '1C' in self.evaluations[i]:
+                        phase1.layout().addWidget(qtw.QLabel('Non c’è per niente questo tipo di relazione tra item A e item B'))
+                        phase1.setHidden(False)
+                    if '2A' in self.evaluations[i]:
+                        phase2.layout().addWidget(qtw.QLabel('Quanto la cosa di cui si parla in A è più generale e include ciò di cui si parla in B? '+str(self.evaluations[i]['2A'])+'/5'))
+                        phase2.setHidden(False)
+                    if '2B' in self.evaluations[i]:
+                        phase2.layout().addWidget(qtw.QLabel('Quanto la cosa di cui si parla in B è più generale e include ciò di cui si parla in A? '+str(self.evaluations[i]['2B'])+'/5'))
+                        phase2.setHidden(False)
+                    if '2C' in self.evaluations[i]:
+                        phase2.layout().addWidget(qtw.QLabel('Non c’è per niente questo tipo di relazione'))
+                        phase2.setHidden(False)
+                    if '3A' in self.evaluations[i]:
+                        phase3.layout().addWidget(qtw.QLabel('Quanto le seguenti due frasi parlano di cose che fanno riferimento a una categoria comune un po’ più generale? '+str(self.evaluations[i]['3A'])+'/5'))
+                        phase3.setHidden(False)
+                    if '3B' in self.evaluations[i]:
+                        phase3.layout().addWidget(qtw.QLabel('A e B non fanno parte per niente di una categoria comune di cose/attività un più generale.'))
+                        phase3.setHidden(False)
                     edit_button = qtw.QPushButton('Edit', clicked = lambda checked, i=i: self.edit_evaluation(i))
                     item.layout().addWidget(edit_button, alignment=qtc.Qt.AlignmentFlag.AlignRight | qtc.Qt.AlignmentFlag.AlignBottom)
                     self.evaluations_layout.addWidget(item, alignment=qtc.Qt.AlignmentFlag.AlignTop)
-                submit_button = qtw.QPushButton('Submit and exit')
-                submit_button.clicked.connect(self.submit)
-                self.evaluations_layout.addWidget(submit_button, alignment=qtc.Qt.AlignmentFlag.AlignCenter | qtc.Qt.AlignmentFlag.AlignBottom)
+                
+                #submit_button = qtw.QPushButton('Submit and exit')
+                #submit_button.clicked.connect(self.submit)
+                #self.evaluations_layout.addWidget(submit_button, alignment=qtc.Qt.AlignmentFlag.AlignCenter | qtc.Qt.AlignmentFlag.AlignBottom)
+                self.submit_button.setHidden(False)
+
+
+                    #self.your_evaluations_tab.layout().addWidget(submit_button, alignment=qtc.Qt.AlignmentFlag.AlignCenter | qtc.Qt.AlignmentFlag.AlignBottom)
             else:
                 self.evaluations_layout.addWidget(qtw.QLabel('No evaluations yet'), alignment=qtc.Qt.AlignmentFlag.AlignCenter)
 
+        
+
+    
+    
     def edit_evaluation(self, index):
         self.current_index = index
         self.tabs.setCurrentIndex(0)
         self.update_labels()
-        semantically = self.evaluations[self.current_index]['semantically']
-        taxonomically = self.evaluations[self.current_index]['taxonomically']
-        causally = self.evaluations[self.current_index]['causally']
-        if semantically != 'No annotation':
-            self.slider.setValue(int(float(semantically)*100))
-            self.check_box.setChecked(False)
-        else:
-            self.slider.setValue(50)
-            self.check_box.setChecked(True)
-        if taxonomically != 'No annotation':
-            self.slider_2.setValue(int(float(taxonomically)*100))
-            self.check_box_2.setChecked(False)
-        else:
-            self.slider_2.setValue(50)
-            self.check_box_2.setChecked(True)
-        if causally != 'No annotation':
-            self.slider_3.setValue(int(float(causally)*100))
-            self.check_box_3.setChecked(False)
-        else:
-            self.slider_3.setValue(50)
-            self.check_box_3.setChecked(True)
-        self.progress.setValue(int(self.current_index/len(self.choices)*100))
+        self.back_phase1(self.phase1_box)
+        self.back_phase2(self.phase2_box)
+        self.back_phase3(self.phase3_box)
+        if self.current_index in self.evaluations:
+            if '1A' in self.evaluations[self.current_index]:
+                self.update_radio1A(self.phase1_box)
+                self.slider_1A.setValue(int(self.evaluations[self.current_index]['1A']))
+            elif '1B' in self.evaluations[self.current_index]:
+                self.update_radio1B(self.phase1_box)
+                self.slider_1B.setValue(int(self.evaluations[self.current_index]['1B']))
+            if '1C' in self.evaluations[self.current_index]:
+                self.back_phase1(self.phase1_box)
+                self.phase1_box.layout().itemAt(2).widget().setChecked(True)
+            if '2A' in self.evaluations[self.current_index]:
+                self.update_radio2A(self.phase2_box)
+                self.slider_2A.setValue(int(self.evaluations[self.current_index]['2A']))
+            elif '2B' in self.evaluations[self.current_index]:
+                self.update_radio2B(self.phase2_box)
+                self.slider_2B.setValue(int(self.evaluations[self.current_index]['2B']))
+            elif '2C' in self.evaluations[self.current_index]:
+                self.back_phase2(self.phase2_box)
+                self.phase2_box.layout().itemAt(2).widget().setChecked(True)
+            if '3A' in self.evaluations[self.current_index]:
+                self.update_radio3A(self.phase3_box)
+                self.slider_3A.setValue(int(self.evaluations[self.current_index]['3A']))
+            if '3B' in self.evaluations[self.current_index]:
+                self.back_phase3(self.phase3_box)
+                self.phase3_box.layout().itemAt(1).widget().setChecked(True)
+        
+        self.progress.setValue(int((self.current_index)/len(self.choices)*100))
+
+
+
+
 
     def submit(self):
         if os.path.exists('data/temp/'+self.username+'_choices.csv'):
@@ -1440,13 +1768,14 @@ class MainWindow(qtw.QWidget):
             print('Saving',filename)
         # save evaluations to file
         self.evaluations = {k: v for k, v in sorted(self.evaluations.items(), key=lambda item: int(item[0]))}
+        
         with open(filename, 'w', encoding='utf-8') as file:
             for i in self.evaluations:
-                self.evaluations[i]['item1'] = self.evaluations[i]['item1'].replace('\n','')
-                self.evaluations[i]['item2'] = self.evaluations[i]['item2'].replace('\n','')
+                
                 if not closeFile:
                     self.evaluations[i]['index'] = i
-                file.write(str(self.evaluations[i])+'\n')
+                file.write(json.dumps(self.evaluations[i])+'\n')
+
         self.evaluations = {}
         self.current_index = 0
         self.update_labels()
@@ -1494,15 +1823,11 @@ class MainWindow(qtw.QWidget):
             if DEBUG:
                 print('Loading evaluations')
             with open('data/temp/'+self.username+'_evaluations.jsonl', 'r', encoding='utf-8') as file:     
-                evaluations = {}
+                self.evaluations = {}
                 for line in file:
-                    eval_data = eval(line)
-                    index = eval_data['index']
-                    del eval_data['index']
-                    evaluations[index] = eval_data
-            return evaluations
-        else:
-            return {}
+                    evaluation = json.loads(line)
+                    self.evaluations[int(evaluation['index'])] = evaluation
+            return self.evaluations
         
     def update_labels(self):
         if self.current_index == 0:
@@ -1536,28 +1861,102 @@ class MainWindow(qtw.QWidget):
         else:
             self.label1.setText('No choices')
             self.label2.setText('No choices')
-        self.update_values()
+        #self.update_values()
 
 
     def next_choice(self):
         if self.current_index < len(self.choices) - 1:
             self.current_index += 1
             self.update_labels()
+            
+            self.back_phase1(self.phase1_box)
+            self.back_phase2(self.phase2_box)
+            self.back_phase3(self.phase3_box)
+
+            if self.evaluations is None:
+                self.evaluations = {}
+            
+            if self.current_index in self.evaluations:
+                if '1A' in self.evaluations[self.current_index]:
+                    self.update_radio1A(self.phase1_box)
+                    self.slider_1A.setValue(int(self.evaluations[self.current_index]['1A']))
+                if '1B' in self.evaluations[self.current_index]:
+                    self.update_radio1B(self.phase1_box)
+                    self.slider_1B.setValue(int(self.evaluations[self.current_index]['1B']))
+                if '1C' in self.evaluations[self.current_index]:
+                    self.back_phase1(self.phase1_box)
+                    self.phase1_box.layout().itemAt(2).widget().setChecked(True)
+
+                if '2A' in self.evaluations[self.current_index]:
+                    self.update_radio2A(self.phase2_box)
+                    self.slider_2A.setValue(int(self.evaluations[self.current_index]['2A']))
+                if '2B' in self.evaluations[self.current_index]:
+                    self.update_radio2B(self.phase2_box)
+                    self.slider_2B.setValue(int(self.evaluations[self.current_index]['2B']))
+                if '2C' in self.evaluations[self.current_index]:
+                    self.back_phase2(self.phase2_box)
+                    self.phase2_box.layout().itemAt(2).widget().setChecked(True)
+
+                if '3A' in self.evaluations[self.current_index]:
+                    self.update_radio3A(self.phase3_box)
+                    self.slider_3A.setValue(int(self.evaluations[self.current_index]['3A']))
+                if '3B' in self.evaluations[self.current_index]:
+                    self.back_phase3(self.phase3_box)
+                    self.phase3_box.layout().itemAt(1).widget().setChecked(True)
+
+            else:
+                self.back_phase1(self.phase1_box)
+                self.back_phase2(self.phase2_box)
+                self.back_phase3(self.phase3_box)
+                
         self.progress.setValue(int(self.current_index/len(self.choices)*100))
-        self.update_values()
+        #self.update_values()
 
     def previous_choice(self):        
             if self.current_index > 0:
                 self.current_index -= 1
                 self.update_labels()
+                self.back_phase1(self.phase1_box)
+                self.back_phase2(self.phase2_box)
+                self.back_phase3(self.phase3_box)
+                if self.current_index in self.evaluations:
+                    if '1A' in self.evaluations[self.current_index]:
+                        self.update_radio1A(self.phase1_box)
+                        self.slider_1A.setValue(int(self.evaluations[self.current_index]['1A']))
+                    elif '1B' in self.evaluations[self.current_index]:
+                        self.update_radio1B(self.phase1_box)
+                        self.slider_1B.setValue(int(self.evaluations[self.current_index]['1B']))
+
+                    if '1C' in self.evaluations[self.current_index]:
+                        self.back_phase1(self.phase1_box)
+                        self.phase1_box.layout().itemAt(2).widget().setChecked(True)
+
+
+                    if '2A' in self.evaluations[self.current_index]:
+                        self.update_radio2A(self.phase2_box)
+                        self.slider_2A.setValue(int(self.evaluations[self.current_index]['2A']))
+
+                    elif '2B' in self.evaluations[self.current_index]:
+                        self.update_radio2B(self.phase2_box)
+                        self.slider_2B.setValue(int(self.evaluations[self.current_index]['2B']))
+                    elif '2C' in self.evaluations[self.current_index]:
+                        self.back_phase2(self.phase2_box)
+                        self.phase2_box.layout().itemAt(2).widget().setChecked(True)
+
+                    if '3A' in self.evaluations[self.current_index]:
+                        self.update_radio3A(self.phase3_box)
+                        self.slider_3A.setValue(int(self.evaluations[self.current_index]['3A']))
+                    if '3B' in self.evaluations[self.current_index]:
+                        self.back_phase3(self.phase3_box)
+                        self.phase3_box.layout().itemAt(1).widget().setChecked(True)
+
+                else:
+                    self.back_phase1(self.phase1_box)
+                    self.back_phase2(self.phase2_box)
+                    self.back_phase3(self.phase3_box)
             self.progress.setValue(int(self.current_index/len(self.choices)*100))
-            self.update_values()
+            #self.update_values()
 
 app = qtw.QApplication([])
 mw = MainWindow()
 sys.exit(app.exec())
-
-
-'''
-causale
-logica'''
