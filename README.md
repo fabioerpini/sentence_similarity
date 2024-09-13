@@ -1,4 +1,4 @@
-Comandi per l'installazione
+Comandi per l'installazione e l'esecuzione
 - git clone https://github.com/fabioerpini/sentence_similarity
 - cd sentence_similarity
 - pip install PyQt6
