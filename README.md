@@ -1,10 +1,12 @@
 Comandi per l'installazione
 - git clone https://github.com/fabioerpini/sentence_similarity
+- cd sentence_similarity
 - pip install PyQt6
 - pip install numpy
 - pip install gensim
 - pip install sentence-transformers
 - pip install python-docx
+- python3 gui2.py
 
 (Solo Windows) 
 Errore Long Path:
