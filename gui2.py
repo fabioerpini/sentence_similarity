@@ -37,23 +37,29 @@ class MainWindow(qtw.QWidget):
         self.phase1_box = qtw.QGroupBox()
         self.phase2_box = qtw.QGroupBox()
         self.phase3_box = qtw.QGroupBox()
+        self.phase4_box = qtw.QGroupBox()
         if self.phase1_box.layout() is None:
             self.phase1_box.setLayout(qtw.QVBoxLayout())
         if self.phase2_box.layout() is None:
             self.phase2_box.setLayout(qtw.QVBoxLayout())
         if self.phase3_box.layout() is None:
             self.phase3_box.setLayout(qtw.QVBoxLayout())
+        if self.phase4_box.layout() is None:
+            self.phase4_box.setLayout(qtw.QVBoxLayout())
         self.slider_1A = qtw.QSlider()
         self.slider_1B = qtw.QSlider()
         self.slider_2A = qtw.QSlider()
         self.slider_2B = qtw.QSlider()
         self.slider_3A = qtw.QSlider()
+        self.slider_4A = qtw.QSlider()
+        self.slider_4B = qtw.QSlider()
         self.slider_label = qtw.QLabel()
         self.slider_2 = qtw.QSlider()
 
         self.slider_label_2 = qtw.QLabel()
-        self.slider_3 = qtw.QSlider()
+        #self.slider_3 = qtw.QSlider()
         self.slider_label_3 = qtw.QLabel()
+
         self.message_label = qtw.QLabel()
 
         self.setWindowTitle('Semantic Similarity')
@@ -238,6 +244,21 @@ class MainWindow(qtw.QWidget):
                                 if '3B' not in self.evaluations[items]:
                                     self.evaluations[items]['3B'] = []
                                 self.evaluations[items]['3B'].append(eval_data['3B'])
+                            
+                            if '4A' in eval_data:
+                                if '4A' not in self.evaluations[items]:
+                                    self.evaluations[items]['4A'] = []
+                                self.evaluations[items]['4A'].append(eval_data['4A'])
+                            if '4B' in eval_data:
+                                if '4B' not in self.evaluations[items]:
+                                    self.evaluations[items]['4B'] = []
+                                self.evaluations[items]['4B'].append(eval_data['4B'])
+                            if '4C' in eval_data:
+                                if '4C' not in self.evaluations[items]:
+                                    self.evaluations[items]['4C'] = []
+                                self.evaluations[items]['4C'].append(eval_data['4C'])
+
+
 
 
                         
@@ -256,33 +277,47 @@ class MainWindow(qtw.QWidget):
             phase3_box = qtw.QGroupBox('Sovrainsieme comune?')
             phase3_box.setLayout(qtw.QVBoxLayout())
             item.layout().addWidget(phase3_box)
+            phase4_box = qtw.QGroupBox('Una cosa aumenta la probabilità di un’altra?')
+            phase4_box.setLayout(qtw.QVBoxLayout())
+            item.layout().addWidget(phase4_box)
+
             phase1_box.setHidden(True)
             phase2_box.setHidden(True)
             phase3_box.setHidden(True)
+            phase4_box.setHidden(True)
             if '1A' in self.evaluations[items]:
-                phase1_box.layout().addWidget(qtw.QLabel('Quanto le seguenti due frasi hanno lo stesso significato? '+ str(round(mean(self.evaluations[items]['1A']),2))+ ' => ' + str(round((mean(self.evaluations[items]['1A'])-1)/4,2))))
+                phase1_box.layout().addWidget(qtw.QLabel('Quanto le seguenti due frasi hanno lo stesso significato? '+ str(round(mean(self.evaluations[items]['1A']),2))+ '/5 => ' + str(round((mean(self.evaluations[items]['1A'])-1)/4,2))))
                 phase1_box.setHidden(False)
             if '1B' in self.evaluations[items]:
-                phase1_box.layout().addWidget(qtw.QLabel('Quanto le seguenti due frasi hanno un significato opposto? '+str(round(mean(self.evaluations[items]['1B']),2))+ ' => ' + str(round((mean(self.evaluations[items]['1B'])-1)/4,2))))
+                phase1_box.layout().addWidget(qtw.QLabel('Quanto le seguenti due frasi hanno un significato opposto? '+str(round(mean(self.evaluations[items]['1B']),2))+ '/5 => ' + str(round((mean(self.evaluations[items]['1B'])-1)/4,2))))
                 phase1_box.setHidden(False)
             if '1C' in self.evaluations[items]:
-                phase1_box.layout().addWidget(qtw.QLabel('Non c’è per niente questo tipo di relazione tra item A e item B:'+str(len(self.evaluations[items]['1C']))))
+                phase1_box.layout().addWidget(qtw.QLabel('Non c’è per niente questo tipo di relazione tra item A e item B: '+str(len(self.evaluations[items]['1C']))))
                 phase1_box.setHidden(False)
             if '2A' in self.evaluations[items]:
-                phase2_box.layout().addWidget(qtw.QLabel('Quanto la cosa di cui si parla in A è più generale e include ciò di cui si parla in B? '+str(round(mean(self.evaluations[items]['2A']),2))+ ' => ' + str(round((mean(self.evaluations[items]['2A'])-1)/4,2))))
+                phase2_box.layout().addWidget(qtw.QLabel('Quanto la cosa di cui si parla in A è più generale e include ciò di cui si parla in B? '+str(round(mean(self.evaluations[items]['2A']),2))+ '/5 => ' + str(round((mean(self.evaluations[items]['2A'])-1)/4,2))))
                 phase2_box.setHidden(False)
             if '2B' in self.evaluations[items]:
-                phase2_box.layout().addWidget(qtw.QLabel('Quanto la cosa di cui si parla in B è più generale e include ciò di cui si parla in A? '+str(round(mean(self.evaluations[items]['2B']),2))+ ' => ' + str(round((mean(self.evaluations[items]['2B'])-1)/4,2))))
+                phase2_box.layout().addWidget(qtw.QLabel('Quanto la cosa di cui si parla in B è più generale e include ciò di cui si parla in A? '+str(round(mean(self.evaluations[items]['2B']),2))+ '/5 => ' + str(round((mean(self.evaluations[items]['2B'])-1)/4,2))))
                 phase2_box.setHidden(False)
             if '2C' in self.evaluations[items]:
                 phase2_box.layout().addWidget(qtw.QLabel('Non c’è per niente questo tipo di relazione: '+str(len(self.evaluations[items]['2C']))))
                 phase2_box.setHidden(False)
             if '3A' in self.evaluations[items]:
-                phase3_box.layout().addWidget(qtw.QLabel('Quanto le seguenti due frasi parlano di cose che fanno riferimento a una categoria comune un po’ più generale? '+ str(round(mean(self.evaluations[items]['3A']),2))+ ' => ' + str(round((mean(self.evaluations[items]['3A'])-1)/4,2))))
+                phase3_box.layout().addWidget(qtw.QLabel('Quanto le seguenti due frasi parlano di cose che fanno riferimento a una categoria comune un po’ più generale? '+ str(round(mean(self.evaluations[items]['3A']),2))+ '/5 => ' + str(round((mean(self.evaluations[items]['3A'])-1)/4,2))))
                 phase3_box.setHidden(False)
             if '3B' in self.evaluations[items]:
                 phase3_box.layout().addWidget(qtw.QLabel('A e B non fanno parte per niente di una categoria comune di cose/attività un più generale: '+str(len(self.evaluations[items]['3B']))))
                 phase3_box.setHidden(False)
+            if '4A' in self.evaluations[items]:
+                phase4_box.layout().addWidget(qtw.QLabel('Quanto la cosa di cui si parla in A aumenta la probabilità di ciò di cui si parla in B? '+str(round(mean(self.evaluations[items]['4A']),2))+ '/5 => ' + str(round((mean(self.evaluations[items]['4A'])-1)/4,2))))
+                phase4_box.setHidden(False)
+            if '4B' in self.evaluations[items]:
+                phase4_box.layout().addWidget(qtw.QLabel('Quanto la cosa di cui si parla in B aumenta la probabilità di ciò di cui si parla in A? '+str(round(mean(self.evaluations[items]['4B']),2))+ '/5 => ' + str(round((mean(self.evaluations[items]['4B'])-1)/4,2))))
+                phase4_box.setHidden(False)
+            if '4C' in self.evaluations[items]:
+                phase4_box.layout().addWidget(qtw.QLabel('Non c’è per niente questo tipo di relazione tra A e B: '+str(len(self.evaluations[items]['4C']))))
+                phase4_box.setHidden(False)
 
 
                                 
@@ -407,6 +442,9 @@ class MainWindow(qtw.QWidget):
         B3 = []
         C1 = []
         C2 = []
+        D1 = []
+        D2 = []
+        D3 = []
                 
 
         # update evaluation layout
@@ -427,9 +465,14 @@ class MainWindow(qtw.QWidget):
                 phase3_box = qtw.QGroupBox('Sovrainsieme comune?')
                 phase3_box.setLayout(qtw.QVBoxLayout())
                 item.layout().addWidget(phase3_box)
+                phase4_box = qtw.QGroupBox('Una cosa aumenta la probabilità di un’altra?')
+                phase4_box.setLayout(qtw.QVBoxLayout())
+                item.layout().addWidget(phase4_box)
+
                 phase1_box.setHidden(True)
                 phase2_box.setHidden(True)
                 phase3_box.setHidden(True)
+                phase4_box.setHidden(True)
                 T5_box = qtw.QGroupBox('T5 similarity')
                 T5_box.setLayout(qtw.QVBoxLayout())
                 item.layout().addWidget(T5_box)
@@ -465,6 +508,18 @@ class MainWindow(qtw.QWidget):
                     phase3_box.layout().addWidget(qtw.QLabel('A e B non fanno parte per niente di una categoria comune di cose/attività un più generale: '+str(len(self.evaluations[items]['3B']))))
                     B3.extend(self.evaluations[items]['3B'])
                     phase3_box.setHidden(False)
+                if '4A' in self.evaluations[items]:
+                    phase4_box.layout().addWidget(qtw.QLabel('Quanto la cosa di cui si parla in A aumenta la probabilità di ciò di cui si parla in B? '+str(round(mean(self.evaluations[items]['4A']),2))+ ' => ' + str(round((mean(self.evaluations[items]['4A'])-1)/4,2))))
+                    D1.extend(self.evaluations[items]['4A'])
+                    phase4_box.setHidden(False)
+                if '4B' in self.evaluations[items]:
+                    phase4_box.layout().addWidget(qtw.QLabel('Quanto la cosa di cui si parla in B aumenta la probabilità di ciò di cui si parla in A? '+str(round(mean(self.evaluations[items]['4B']),2))+ ' => ' + str(round((mean(self.evaluations[items]['4B'])-1)/4,2))))
+                    D2.extend(self.evaluations[items]['4B'])
+                    phase4_box.setHidden(False)
+                if '4C' in self.evaluations[items]:
+                    phase4_box.layout().addWidget(qtw.QLabel('Non c’è per niente questo tipo di relazione tra A e B: '+str(len(self.evaluations[items]['4C']))))
+                    D3.extend(self.evaluations[items]['4C'])
+                    phase4_box.setHidden(False)
                 if 'T5' in self.evaluations[items]:
                     x = str(round((self.evaluations[items]['T5']*4)+1,2))
                     if float(x) > 0:
@@ -501,6 +556,14 @@ class MainWindow(qtw.QWidget):
             human_values.append(C1)
         if C2:
             C2 = len(C2)
+        if D1:
+            D1 = mean(D1)
+            human_values.append(D1)
+        if D2:
+            D2 = mean(D2)
+            human_values.append(D2)
+        if D3:
+            D3 = len(D3)
 
         if T5_values:
             T5_values = round(mean(T5_values),2)
@@ -1277,6 +1340,22 @@ class MainWindow(qtw.QWidget):
             radio_3A.toggled.connect(lambda: self.update_radio3A(self.phase3_box))
             radio_3B.toggled.connect(lambda: self.update_evaluation('3B', 0))
 
+            self.phase4_box = qtw.QGroupBox()
+            self.phase4_box.setLayout(qtw.QVBoxLayout())
+            self.phase4_box.setTitle('Una cosa aumenta la probabilità di un’altra?')
+            self.ev.addWidget(self.phase4_box)
+
+            radio_4A = qtw.QRadioButton('1)	A aumenta almeno in piccola parte la probabilità di B')
+            radio_4B = qtw.QRadioButton('2)	B aumenta almeno in piccola parte la probabilità di A')
+            radio_4C = qtw.QRadioButton('3)	Non c’è per niente questo tipo di relazione tra A e B')
+
+            self.phase4_box.layout().addWidget(radio_4A)
+            self.phase4_box.layout().addWidget(radio_4B)
+            self.phase4_box.layout().addWidget(radio_4C)
+
+            radio_4A.toggled.connect(lambda: self.update_radio4A(self.phase4_box))
+            radio_4B.toggled.connect(lambda: self.update_radio4B(self.phase4_box))
+            radio_4C.toggled.connect(lambda: self.update_evaluation('4C', 0))
 
             if self.evaluations:
                 self.update_values()
@@ -1502,6 +1581,7 @@ class MainWindow(qtw.QWidget):
         self.slider_3A.setRange(1,5)
         x = self.phase1_box.frameSize().width()
         y = self.phase1_box.frameSize().height()
+
         title = qtw.QLabel('Quanto le seguenti due frasi parlano di cose che fanno riferimento a una categoria comune un po’ più generale?')
         title.setFixedSize(title.sizeHint())
         self.slider_3A.setFixedSize(x-200, 30)
@@ -1539,7 +1619,80 @@ class MainWindow(qtw.QWidget):
         if previous is not None and previous in self.evaluations.get(self.current_index, {}):
             del self.evaluations[self.current_index][previous]
 
+    def update_radio4A(self, phase4_box):
+        if DEBUG:
+            print('Updating radio 4A')
+        x = 978
+        y = 93
+        self.clear_box(phase4_box)
+        self.slider_4A = qtw.QSlider(qtc.Qt.Orientation.Horizontal)
+        self.slider_4A.setRange(1,5)
+        
+        title = qtw.QLabel('Quanto la presenza di A aumenta la probabilità di B?')
+        title.setFixedSize(title.sizeHint())
+        self.slider_4A.setFixedSize(x-200, 30)
+        self.slider_4A.valueChanged.connect(lambda: self.slider_label_4A.setText('Valore: '+str(self.slider_4A.value())))
+        self.slider_4A.valueChanged.connect(lambda: self.update_evaluation( '4A', self.slider_4A.value()))
+        self.slider_label_4A = qtw.QLabel('Valore: '+str(self.slider_4A.value()))
+        self.slider_label_4A.setFixedSize(self.slider_label_4A.sizeHint())
+        phase4_box.layout().addWidget(title, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+        phase4_box.layout().addWidget(self.slider_4A, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+        layout = qtw.QHBoxLayout()
+        #phase1_box.layout().addWidget(self.slider_label_1A, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+        back_button = qtw.QPushButton('Back')
+        back_button.setFixedSize(back_button.sizeHint())
+        layout.addWidget(back_button, alignment=qtc.Qt.AlignmentFlag.AlignLeft)
+        layout.addWidget(self.slider_label_4A, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+        phase4_box.layout().addLayout(layout)
+        back_button.clicked.connect(lambda: self.back_phase4(phase4_box, '4A'))
+        phase4_box.setFixedSize(x, y)
 
+    def update_radio4B(self, phase4_box):
+        if DEBUG:
+            print('Updating radio 4B')
+        self.clear_box(phase4_box)
+        self.slider_4B = qtw.QSlider(qtc.Qt.Orientation.Horizontal)
+        self.slider_4B.setRange(1,5)
+        x = self.phase4_box.frameSize().width()
+        y = self.phase4_box.frameSize().height()
+        title = qtw.QLabel('Quanto la presenza di B aumenta la probabilità di A?')
+        title.setFixedSize(title.sizeHint())
+        self.slider_4B.setFixedSize(x-200, 30)
+        self.slider_4B.valueChanged.connect(lambda: self.slider_label_4B.setText('Valore: '+str(self.slider_4B.value())))
+        self.slider_4B.valueChanged.connect(lambda: self.update_evaluation( '4B', self.slider_4B.value()))
+        self.slider_label_4B = qtw.QLabel('Valore: '+str(self.slider_4B.value()))
+        self.slider_label_4B.setFixedSize(self.slider_label_4B.sizeHint())
+        phase4_box.layout().addWidget(title, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+        phase4_box.layout().addWidget(self.slider_4B, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+        layout = qtw.QHBoxLayout()
+        #phase1_box.layout().addWidget(self.slider_label_1A, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+        back_button = qtw.QPushButton('Back')
+        back_button.setFixedSize(back_button.sizeHint())
+        layout.addWidget(back_button, alignment=qtc.Qt.AlignmentFlag.AlignLeft)
+        layout.addWidget(self.slider_label_4B, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
+        phase4_box.layout().addLayout(layout)
+        back_button.clicked.connect(lambda: self.back_phase4(phase4_box, '4B'))
+        phase4_box.setFixedSize(x, y)
+
+    def back_phase4(self, phase4_box, previous = None):
+        self.clear_box(phase4_box)
+        radio_4A = qtw.QRadioButton('1)	A aumenta almeno in piccola parte la probabilità di B')
+        radio_4B = qtw.QRadioButton('2)	B aumenta almeno in piccola parte la probabilità di A')
+        radio_4C = qtw.QRadioButton('3)	Non c’è per niente questo tipo di relazione tra A e B')
+
+        phase4_box.layout().addWidget(radio_4A)
+        phase4_box.layout().addWidget(radio_4B)
+        phase4_box.layout().addWidget(radio_4C)
+
+        radio_4A.toggled.connect(lambda: self.update_radio4A(phase4_box))
+        radio_4B.toggled.connect(lambda: self.update_radio4B(phase4_box))
+        radio_4C.toggled.connect(lambda: self.update_evaluation('4C', 0))
+
+        if self.evaluations is None:
+            self.evaluations = {}
+
+        if previous is not None and previous in self.evaluations.get(self.current_index, {}):
+            del self.evaluations[self.current_index][previous]
         
     
     def clear_box(self, box):
@@ -1593,12 +1746,14 @@ class MainWindow(qtw.QWidget):
             self.evaluations = {}
 
         if self.evaluations is not None and self.current_index in self.evaluations:
+
             keys_to_remove = [i for i in self.evaluations[self.current_index] if i != 'item1' and i != 'item2' and i[0] == phase[0]]
             for i in keys_to_remove:
                 del self.evaluations[self.current_index][i]
             self.evaluations[self.current_index][phase] = value
         else:
             self.evaluations[self.current_index] = {'item1': self.choices[self.current_index][0].replace('\n',''), 'item2': self.choices[self.current_index][1].replace('\n',''), phase: value}
+
 
 
 
@@ -1634,6 +1789,15 @@ class MainWindow(qtw.QWidget):
             elif '3B' in self.evaluations[self.current_index]:
                 self.back_phase3(self.phase3_box)
                 self.phase3_box.layout().itemAt(1).widget().setChecked(True)
+            if '4A' in self.evaluations[self.current_index]:
+                self.update_radio4A(self.phase4_box)
+                self.slider_4A.setValue(int(self.evaluations[self.current_index]['4A']))
+            elif '4B' in self.evaluations[self.current_index]:
+                self.update_radio4B(self.phase4_box)
+                self.slider_4B.setValue(int(self.evaluations[self.current_index]['4B']))
+            elif '4C' in self.evaluations[self.current_index]:
+                self.back_phase4(self.phase4_box)
+                self.phase4_box.layout().itemAt(2).widget().setChecked(True)
 
 
 
@@ -1660,6 +1824,10 @@ class MainWindow(qtw.QWidget):
                     phase3.setLayout(qtw.QVBoxLayout())
                     item.layout().addWidget(phase3)
                     phase3.setHidden(True)
+                    phase4 = qtw.QGroupBox('Una cosa aumenta la probabilità di un’altra?')
+                    phase4.setLayout(qtw.QVBoxLayout())
+                    item.layout().addWidget(phase4)
+                    phase4.setHidden(True)
                     
 
                     if '1A' in self.evaluations[i]:
@@ -1686,6 +1854,15 @@ class MainWindow(qtw.QWidget):
                     if '3B' in self.evaluations[i]:
                         phase3.layout().addWidget(qtw.QLabel('A e B non fanno parte per niente di una categoria comune di cose/attività un più generale.'))
                         phase3.setHidden(False)
+                    if '4A' in self.evaluations[i]:
+                        phase4.layout().addWidget(qtw.QLabel('Quanto la cosa di cui si parla in A aumenta la probabilità di ciò di cui si parla in B? '+str(self.evaluations[i]['4A'])+'/5'))
+                        phase4.setHidden(False)
+                    if '4B' in self.evaluations[i]:
+                        phase4.layout().addWidget(qtw.QLabel('Quanto la cosa di cui si parla in B aumenta la probabilità di ciò di cui si parla in A? '+str(self.evaluations[i]['4B'])+'/5'))
+                        phase4.setHidden(False)
+                    if '4C' in self.evaluations[i]:
+                        phase4.layout().addWidget(qtw.QLabel('Non c’è per niente questo tipo di relazione tra A e B'))
+                        phase4.setHidden(False)
                     edit_button = qtw.QPushButton('Edit', clicked = lambda checked, i=i: self.edit_evaluation(i))
                     item.layout().addWidget(edit_button, alignment=qtc.Qt.AlignmentFlag.AlignRight | qtc.Qt.AlignmentFlag.AlignBottom)
                     self.evaluations_layout.addWidget(item, alignment=qtc.Qt.AlignmentFlag.AlignTop)
@@ -1711,6 +1888,7 @@ class MainWindow(qtw.QWidget):
         self.back_phase1(self.phase1_box)
         self.back_phase2(self.phase2_box)
         self.back_phase3(self.phase3_box)
+        self.back_phase4(self.phase4_box)
         if self.current_index in self.evaluations:
             if '1A' in self.evaluations[self.current_index]:
                 self.update_radio1A(self.phase1_box)
@@ -1736,6 +1914,15 @@ class MainWindow(qtw.QWidget):
             if '3B' in self.evaluations[self.current_index]:
                 self.back_phase3(self.phase3_box)
                 self.phase3_box.layout().itemAt(1).widget().setChecked(True)
+            if '4A' in self.evaluations[self.current_index]:
+                self.update_radio4A(self.phase4_box)
+                self.slider_4A.setValue(int(self.evaluations[self.current_index]['4A']))
+            elif '4B' in self.evaluations[self.current_index]:
+                self.update_radio4B(self.phase4_box)
+                self.slider_4B.setValue(int(self.evaluations[self.current_index]['4B']))
+            elif '4C' in self.evaluations[self.current_index]:
+                self.back_phase4(self.phase4_box)
+                self.phase4_box.layout().itemAt(2).widget().setChecked(True)
         
         self.progress.setValue(int((self.current_index)/len(self.choices)*100))
 
@@ -1872,6 +2059,7 @@ class MainWindow(qtw.QWidget):
             self.back_phase1(self.phase1_box)
             self.back_phase2(self.phase2_box)
             self.back_phase3(self.phase3_box)
+            self.back_phase4(self.phase4_box)
 
             if self.evaluations is None:
                 self.evaluations = {}
@@ -1903,11 +2091,21 @@ class MainWindow(qtw.QWidget):
                 if '3B' in self.evaluations[self.current_index]:
                     self.back_phase3(self.phase3_box)
                     self.phase3_box.layout().itemAt(1).widget().setChecked(True)
+                if '4A' in self.evaluations[self.current_index]:
+                    self.update_radio4A(self.phase4_box)
+                    self.slider_4A.setValue(int(self.evaluations[self.current_index]['4A']))
+                if '4B' in self.evaluations[self.current_index]:
+                    self.update_radio4B(self.phase4_box)
+                    self.slider_4B.setValue(int(self.evaluations[self.current_index]['4B']))
+                if '4C' in self.evaluations[self.current_index]:
+                    self.back_phase4(self.phase4_box)
+                    self.phase4_box.layout().itemAt(2).widget().setChecked(True)
 
             else:
                 self.back_phase1(self.phase1_box)
                 self.back_phase2(self.phase2_box)
                 self.back_phase3(self.phase3_box)
+                self.back_phase4(self.phase4_box)
                 
         self.progress.setValue(int(self.current_index/len(self.choices)*100))
         #self.update_values()
@@ -1919,6 +2117,7 @@ class MainWindow(qtw.QWidget):
                 self.back_phase1(self.phase1_box)
                 self.back_phase2(self.phase2_box)
                 self.back_phase3(self.phase3_box)
+                self.back_phase4(self.phase4_box)
                 if self.current_index in self.evaluations:
                     if '1A' in self.evaluations[self.current_index]:
                         self.update_radio1A(self.phase1_box)
@@ -1949,11 +2148,21 @@ class MainWindow(qtw.QWidget):
                     if '3B' in self.evaluations[self.current_index]:
                         self.back_phase3(self.phase3_box)
                         self.phase3_box.layout().itemAt(1).widget().setChecked(True)
+                    if '4A' in self.evaluations[self.current_index]:
+                        self.update_radio4A(self.phase4_box)
+                        self.slider_4A.setValue(int(self.evaluations[self.current_index]['4A']))
+                    if '4B' in self.evaluations[self.current_index]:
+                        self.update_radio4B(self.phase4_box)
+                        self.slider_4B.setValue(int(self.evaluations[self.current_index]['4B']))
+                    if '4C' in self.evaluations[self.current_index]:
+                        self.back_phase4(self.phase4_box)
+                        self.phase4_box.layout().itemAt(2).widget().setChecked(True)
 
                 else:
                     self.back_phase1(self.phase1_box)
                     self.back_phase2(self.phase2_box)
                     self.back_phase3(self.phase3_box)
+                    self.back_phase4(self.phase4_box)
             self.progress.setValue(int(self.current_index/len(self.choices)*100))
             #self.update_values()
 
