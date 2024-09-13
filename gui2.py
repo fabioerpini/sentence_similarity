@@ -1197,8 +1197,8 @@ class MainWindow(qtw.QWidget):
             self.tabs = qtw.QTabWidget()
             evaluate_tab = qtw.QWidget()
             self.your_evaluations_tab = qtw.QWidget()
-            if self.your_evaluations_tab.layout() is None:
-                self.your_evaluations_tab.setLayout(qtw.QVBoxLayout())
+            #if self.your_evaluations_tab.layout() is None:
+            #    self.your_evaluations_tab.setLayout(qtw.QVBoxLayout())
 
             self.tabs.addTab(evaluate_tab, 'Evaluate')
             self.tabs.addTab(self.your_evaluations_tab, 'Your evaluations')
