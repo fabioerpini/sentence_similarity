@@ -46,6 +46,7 @@ class MainWindow(qtw.QWidget):
             self.phase3_box.setLayout(qtw.QVBoxLayout())
         if self.phase4_box.layout() is None:
             self.phase4_box.setLayout(qtw.QVBoxLayout())
+
         self.slider_1A = qtw.QSlider()
         self.slider_1B = qtw.QSlider()
         self.slider_2A = qtw.QSlider()
@@ -54,10 +55,11 @@ class MainWindow(qtw.QWidget):
         self.slider_4A = qtw.QSlider()
         self.slider_4B = qtw.QSlider()
         self.slider_label = qtw.QLabel()
-        self.slider_2 = qtw.QSlider()
+        self.text_field = qtw.QLineEdit()
+
 
         self.slider_label_2 = qtw.QLabel()
-        #self.slider_3 = qtw.QSlider()
+
         self.slider_label_3 = qtw.QLabel()
 
         self.message_label = qtw.QLabel()
@@ -260,7 +262,7 @@ class MainWindow(qtw.QWidget):
 
 
 
-
+        categories = []
                         
         for items in self.evaluations:
             item = qtw.QGroupBox()
@@ -304,7 +306,22 @@ class MainWindow(qtw.QWidget):
                 phase2_box.layout().addWidget(qtw.QLabel('Non c’è per niente questo tipo di relazione: '+str(len(self.evaluations[items]['2C']))))
                 phase2_box.setHidden(False)
             if '3A' in self.evaluations[items]:
-                phase3_box.layout().addWidget(qtw.QLabel('Quanto le seguenti due frasi parlano di cose che fanno riferimento a una categoria comune un po’ più generale? '+ str(round(mean(self.evaluations[items]['3A']),2))+ '/5 => ' + str(round((mean(self.evaluations[items]['3A'])-1)/4,2))))
+                value = self.evaluations[items]['3A']
+                values = []
+                
+                for i in value:
+                    v = i
+                    text = ''
+                    if '_' in i:
+                        v,text = i.split('_')
+                        if text not in categories:
+                            categories.append(text)
+                    values.append(int(v))
+                print(values)
+                print(categories)
+
+                phase3_box.layout().addWidget(qtw.QLabel('Quanto le seguenti due frasi parlano di cose che fanno riferimento a una categoria comune un po’ più generale? '+ str(round(mean(values),2))+ '/5 => ' + str(round((mean(values)-1)/4,2))))
+                
                 phase3_box.setHidden(False)
             if '3B' in self.evaluations[items]:
                 phase3_box.layout().addWidget(qtw.QLabel('A e B non fanno parte per niente di una categoria comune di cose/attività un più generale: '+str(len(self.evaluations[items]['3B']))))
@@ -319,6 +336,8 @@ class MainWindow(qtw.QWidget):
                 phase4_box.layout().addWidget(qtw.QLabel('Non c’è per niente questo tipo di relazione tra A e B: '+str(len(self.evaluations[items]['4C']))))
                 phase4_box.setHidden(False)
 
+        if categories:
+            phase3_box.layout().addWidget(qtw.QLabel('Categorie: \n' + '\n'.join(['\t' + category for category in categories])))
 
                                 
 
@@ -501,7 +520,15 @@ class MainWindow(qtw.QWidget):
                     C2.extend(self.evaluations[items]['2C'])
                     phase2_box.setHidden(False)
                 if '3A' in self.evaluations[items]:
-                    phase3_box.layout().addWidget(qtw.QLabel('Quanto le seguenti due frasi parlano di cose che fanno riferimento a una categoria comune un po’ più generale? '+ str(round(mean(self.evaluations[items]['3A']),2))+ ' => ' + str(round((mean(self.evaluations[items]['3A'])-1)/4,2))))
+                    values = []
+                    for i in self.evaluations[items]['3A']:
+                        v = i
+                        text = ''
+                        if '_' in i:
+                            v,text = i.split('_')
+                        values.append(int(v))
+                    phase3_box.layout().addWidget(qtw.QLabel('Quanto le seguenti due frasi parlano di cose che fanno riferimento a una categoria comune un po’ più generale? '+ str(round(mean(values),2))+ ' => ' + str(round((mean(values)-1)/4,2))))
+                    #phase3_box.layout().addWidget(qtw.QLabel('Quanto le seguenti due frasi parlano di cose che fanno riferimento a una categoria comune un po’ più generale? '+ str(round(mean(self.evaluations[items]['3A']),2))+ ' => ' + str(round((mean(self.evaluations[items]['3A'])-1)/4,2))))
                     A3.extend(self.evaluations[items]['3A'])
                     phase3_box.setHidden(False)
                 if '3B' in self.evaluations[items]:
@@ -1284,7 +1311,7 @@ class MainWindow(qtw.QWidget):
             self.ev.layout().addWidget(item2)
 
             #add spacing between the two items
-            self.ev.addSpacing(50)
+            self.ev.addSpacing(15)
 
             item2.layout().addWidget(self.label2)
             self.phase1_box = qtw.QGroupBox()
@@ -1413,8 +1440,8 @@ class MainWindow(qtw.QWidget):
         if DEBUG:
             print('Updating radio 1A')
         self.clear_box(phase1_box)
-        x = self.phase1_box.frameSize().width()
-        y = self.phase1_box.frameSize().height()
+        x = 978
+        y = 100
         self.slider_1A = qtw.QSlider(qtc.Qt.Orientation.Horizontal)
         self.slider_1A.setRange(1,5)
         self.slider_1A.setFixedSize(x-200, 30)
@@ -1438,7 +1465,7 @@ class MainWindow(qtw.QWidget):
         layout.addWidget(self.slider_label_1A, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
         phase1_box.layout().addLayout(layout)
         back_button.clicked.connect(lambda: self.back_phase1(phase1_box, '1A'))
-        phase1_box.setFixedSize(x, y)
+        phase1_box.setFixedSize(x,y)
 
 
 
@@ -1475,8 +1502,8 @@ class MainWindow(qtw.QWidget):
         self.clear_box(phase1_box)
         self.slider_1B = qtw.QSlider(qtc.Qt.Orientation.Horizontal)
         self.slider_1B.setRange(1,5)
-        x = self.phase1_box.frameSize().width()
-        y = self.phase1_box.frameSize().height()
+        x = 978
+        y = 100
         title = qtw.QLabel('Quanto le seguenti due frasi hanno un significato opposto?')
         title.setFixedSize(title.sizeHint())
         self.slider_1B.valueChanged.connect(lambda: self.slider_label_1B.setText('Valore: '+str(self.slider_1B.value())))
@@ -1503,8 +1530,8 @@ class MainWindow(qtw.QWidget):
         self.clear_box(phase2_box)
         self.slider_2A = qtw.QSlider(qtc.Qt.Orientation.Horizontal)
         self.slider_2A.setRange(1,5)
-        x = self.phase2_box.frameSize().width()
-        y = self.phase2_box.frameSize().height()
+        x = 978
+        y = 100
         title = qtw.QLabel('Quanto la cosa di cui si parla in A è più generale e include ciò di cui si parla in B?')
         title.setFixedSize(title.sizeHint())
         self.slider_2A.valueChanged.connect(lambda: self.slider_label_2A.setText('Valore: '+str(self.slider_2A.value())))
@@ -1531,8 +1558,8 @@ class MainWindow(qtw.QWidget):
         self.clear_box(phase2_box)
         self.slider_2B = qtw.QSlider(qtc.Qt.Orientation.Horizontal)
         self.slider_2B.setRange(1,5)
-        x = self.phase2_box.frameSize().width()
-        y = self.phase2_box.frameSize().height()
+        x = 978
+        y = 100
         title = qtw.QLabel('Quanto la cosa di cui si parla in B è più generale e include ciò di cui si parla in A?')
         title.setFixedSize(title.sizeHint())
         self.slider_2B.setFixedSize(x-200, 30)
@@ -1579,8 +1606,8 @@ class MainWindow(qtw.QWidget):
         self.clear_box(phase3_box)
         self.slider_3A = qtw.QSlider(qtc.Qt.Orientation.Horizontal)
         self.slider_3A.setRange(1,5)
-        x = self.phase1_box.frameSize().width()
-        y = self.phase1_box.frameSize().height()
+        x = 978
+        y = 100
 
         title = qtw.QLabel('Quanto le seguenti due frasi parlano di cose che fanno riferimento a una categoria comune un po’ più generale?')
         title.setFixedSize(title.sizeHint())
@@ -1595,7 +1622,14 @@ class MainWindow(qtw.QWidget):
         #phase1_box.layout().addWidget(self.slider_label_1A, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
         back_button = qtw.QPushButton('Back')
         back_button.setFixedSize(back_button.sizeHint())
+
+        self.text_field = qtw.QLineEdit()
+        self.text_field.setPlaceholderText('Categoria comune')
+        self.text_field.textChanged.connect(lambda text: self.update_evaluation('3A', self.slider_3A.value(), text))
+        self.text_field.setFixedSize(200, 20)
+
         layout.addWidget(back_button, alignment=qtc.Qt.AlignmentFlag.AlignLeft)
+        layout.addWidget(self.text_field, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(self.slider_label_3A, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
         phase3_box.layout().addLayout(layout)
         back_button.clicked.connect(lambda: self.back_phase3(phase3_box, '3A'))
@@ -1623,7 +1657,7 @@ class MainWindow(qtw.QWidget):
         if DEBUG:
             print('Updating radio 4A')
         x = 978
-        y = 93
+        y = 100
         self.clear_box(phase4_box)
         self.slider_4A = qtw.QSlider(qtc.Qt.Orientation.Horizontal)
         self.slider_4A.setRange(1,5)
@@ -1653,8 +1687,8 @@ class MainWindow(qtw.QWidget):
         self.clear_box(phase4_box)
         self.slider_4B = qtw.QSlider(qtc.Qt.Orientation.Horizontal)
         self.slider_4B.setRange(1,5)
-        x = self.phase4_box.frameSize().width()
-        y = self.phase4_box.frameSize().height()
+        x = 978
+        y = 100
         title = qtw.QLabel('Quanto la presenza di B aumenta la probabilità di A?')
         title.setFixedSize(title.sizeHint())
         self.slider_4B.setFixedSize(x-200, 30)
@@ -1738,7 +1772,7 @@ class MainWindow(qtw.QWidget):
 
 
 
-    def update_evaluation(self, phase, value):
+    def update_evaluation(self, phase, value, text = None):
         if DEBUG:
             print('Updating evaluation', phase, value)
         
@@ -1751,8 +1785,11 @@ class MainWindow(qtw.QWidget):
             for i in keys_to_remove:
                 del self.evaluations[self.current_index][i]
             self.evaluations[self.current_index][phase] = value
+            if text is not None:
+                self.evaluations[self.current_index][phase] = str(self.evaluations[self.current_index][phase])+'_'+text
         else:
             self.evaluations[self.current_index] = {'item1': self.choices[self.current_index][0].replace('\n',''), 'item2': self.choices[self.current_index][1].replace('\n',''), phase: value}
+
 
 
 
@@ -1785,7 +1822,12 @@ class MainWindow(qtw.QWidget):
                 self.phase2_box.layout().itemAt(2).widget().setChecked(True)
             if '3A' in self.evaluations[self.current_index]:
                 self.update_radio3A(self.phase3_box)
-                self.slider_3A.setValue(int(self.evaluations[self.current_index]['3A']))
+                if '_' in self.evaluations[self.current_index]['3A']:
+                    value, text = self.evaluations[self.current_index]['3A'].split('_')
+                    self.slider_3A.setValue(int(value))
+                    self.text_field.setText(text)
+                else:
+                    self.slider_3A.setValue(int(self.evaluations[self.current_index]['3A']))
             elif '3B' in self.evaluations[self.current_index]:
                 self.back_phase3(self.phase3_box)
                 self.phase3_box.layout().itemAt(1).widget().setChecked(True)
@@ -1849,7 +1891,13 @@ class MainWindow(qtw.QWidget):
                         phase2.layout().addWidget(qtw.QLabel('Non c’è per niente questo tipo di relazione'))
                         phase2.setHidden(False)
                     if '3A' in self.evaluations[i]:
-                        phase3.layout().addWidget(qtw.QLabel('Quanto le seguenti due frasi parlano di cose che fanno riferimento a una categoria comune un po’ più generale? '+str(self.evaluations[i]['3A'])+'/5'))
+                        value = str(self.evaluations[i]['3A'])
+                        if len(str(value)) > 1:
+                            text = value[2:]
+                            value = value[0]
+                        phase3.layout().addWidget(qtw.QLabel('Quanto le seguenti due frasi parlano di cose che fanno riferimento a una categoria comune un po’ più generale? '+str(value)+'/5'))
+                        if len(self.evaluations[i]['3A']) > 1:
+                            phase3.layout().addWidget(qtw.QLabel('Categoria comune: '+text))
                         phase3.setHidden(False)
                     if '3B' in self.evaluations[i]:
                         phase3.layout().addWidget(qtw.QLabel('A e B non fanno parte per niente di una categoria comune di cose/attività un più generale.'))
@@ -1910,7 +1958,12 @@ class MainWindow(qtw.QWidget):
                 self.phase2_box.layout().itemAt(2).widget().setChecked(True)
             if '3A' in self.evaluations[self.current_index]:
                 self.update_radio3A(self.phase3_box)
-                self.slider_3A.setValue(int(self.evaluations[self.current_index]['3A']))
+                if '_' in self.evaluations[self.current_index]['3A']:
+                    value, text = self.evaluations[self.current_index]['3A'].split('_')
+                    self.slider_3A.setValue(int(value))
+                    self.text_field.setText(text)
+                else:
+                    self.slider_3A.setValue(int(self.evaluations[self.current_index]['3A']))
             if '3B' in self.evaluations[self.current_index]:
                 self.back_phase3(self.phase3_box)
                 self.phase3_box.layout().itemAt(1).widget().setChecked(True)
@@ -2087,7 +2140,12 @@ class MainWindow(qtw.QWidget):
 
                 if '3A' in self.evaluations[self.current_index]:
                     self.update_radio3A(self.phase3_box)
-                    self.slider_3A.setValue(int(self.evaluations[self.current_index]['3A']))
+                    if '_' in self.evaluations[self.current_index]['3A']:
+                        value, text = self.evaluations[self.current_index]['3A'].split('_')
+                        self.slider_3A.setValue(int(value))
+                        self.text_field.setText(text)
+                    else:
+                        self.slider_3A.setValue(int(self.evaluations[self.current_index]['3A']))
                 if '3B' in self.evaluations[self.current_index]:
                     self.back_phase3(self.phase3_box)
                     self.phase3_box.layout().itemAt(1).widget().setChecked(True)
@@ -2144,7 +2202,12 @@ class MainWindow(qtw.QWidget):
 
                     if '3A' in self.evaluations[self.current_index]:
                         self.update_radio3A(self.phase3_box)
-                        self.slider_3A.setValue(int(self.evaluations[self.current_index]['3A']))
+                        if '_' in self.evaluations[self.current_index]['3A']:
+                            value, text = self.evaluations[self.current_index]['3A'].split('_')
+                            self.slider_3A.setValue(int(value))
+                            self.text_field.setText(text)
+                        else:
+                            self.slider_3A.setValue(int(self.evaluations[self.current_index]['3A']))
                     if '3B' in self.evaluations[self.current_index]:
                         self.back_phase3(self.phase3_box)
                         self.phase3_box.layout().itemAt(1).widget().setChecked(True)
