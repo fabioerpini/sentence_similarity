@@ -324,7 +324,7 @@ class MainWindow(qtw.QWidget):
                 
                 phase3_box.setHidden(False)
             if '3B' in self.evaluations[items]:
-                phase3_box.layout().addWidget(qtw.QLabel('A e B non fanno parte per niente di una categoria comune di cose/attività un più generale: '+str(len(self.evaluations[items]['3B']))))
+                phase3_box.layout().addWidget(qtw.QLabel("A e B non fanno parte per niente di una categoria comune di cose/attività un po' più generale: "+str(len(self.evaluations[items]['3B']))))
                 phase3_box.setHidden(False)
             if '4A' in self.evaluations[items]:
                 phase4_box.layout().addWidget(qtw.QLabel('Quanto la cosa di cui si parla in A aumenta la probabilità di ciò di cui si parla in B? '+str(round(mean(self.evaluations[items]['4A']),2))+ '/5 => ' + str(round((mean(self.evaluations[items]['4A'])-1)/4,2))))
@@ -532,7 +532,7 @@ class MainWindow(qtw.QWidget):
                     A3.extend(self.evaluations[items]['3A'])
                     phase3_box.setHidden(False)
                 if '3B' in self.evaluations[items]:
-                    phase3_box.layout().addWidget(qtw.QLabel('A e B non fanno parte per niente di una categoria comune di cose/attività un più generale: '+str(len(self.evaluations[items]['3B']))))
+                    phase3_box.layout().addWidget(qtw.QLabel("A e B non fanno parte per niente di una categoria comune di cose/attività un po' più generale: "+str(len(self.evaluations[items]['3B']))))
                     B3.extend(self.evaluations[items]['3B'])
                     phase3_box.setHidden(False)
                 if '4A' in self.evaluations[items]:
@@ -1358,8 +1358,8 @@ class MainWindow(qtw.QWidget):
             self.phase3_box.setTitle('Sovrainsieme comune?')
             self.ev.addWidget(self.phase3_box)
 
-            radio_3A = qtw.QRadioButton('1)	A e B appartengono, almeno in piccola parte, di una categoria comune di cose/attività un più generale.')
-            radio_3B = qtw.QRadioButton('2)	A e B non fanno parte per niente di una categoria comune di cose/attività un più generale.')
+            radio_3A = qtw.QRadioButton("1)	A e B appartengono, almeno in piccola parte, di una categoria comune di cose/attività un po' più generale.")
+            radio_3B = qtw.QRadioButton("2)	A e B non fanno parte per niente di una categoria comune di cose/attività un po' più generale.")
 
             self.phase3_box.layout().addWidget(radio_3A)
             self.phase3_box.layout().addWidget(radio_3B)
@@ -1638,8 +1638,8 @@ class MainWindow(qtw.QWidget):
 
     def back_phase3(self, phase3_box, previous = None):
         self.clear_box(phase3_box)
-        radio_3A = qtw.QRadioButton('1)	A e B appartengono, almeno in piccola parte, di una categoria comune di cose/attività un più generale.')
-        radio_3B = qtw.QRadioButton('2)	A e B non fanno parte per niente di una categoria comune di cose/attività un più generale.')
+        radio_3A = qtw.QRadioButton("1)	A e B appartengono, almeno in piccola parte, di una categoria comune di cose/attività un po' più generale.")
+        radio_3B = qtw.QRadioButton("2)	A e B non fanno parte per niente di una categoria comune di cose/attività un po' più generale.")
 
         phase3_box.layout().addWidget(radio_3A)
         phase3_box.layout().addWidget(radio_3B)
@@ -1900,7 +1900,7 @@ class MainWindow(qtw.QWidget):
                             phase3.layout().addWidget(qtw.QLabel('Categoria comune: '+text))
                         phase3.setHidden(False)
                     if '3B' in self.evaluations[i]:
-                        phase3.layout().addWidget(qtw.QLabel('A e B non fanno parte per niente di una categoria comune di cose/attività un più generale.'))
+                        phase3.layout().addWidget(qtw.QLabel("A e B non fanno parte per niente di una categoria comune di cose/attività un po' più generale."))
                         phase3.setHidden(False)
                     if '4A' in self.evaluations[i]:
                         phase4.layout().addWidget(qtw.QLabel('Quanto la cosa di cui si parla in A aumenta la probabilità di ciò di cui si parla in B? '+str(self.evaluations[i]['4A'])+'/5'))
