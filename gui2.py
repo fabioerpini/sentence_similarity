@@ -312,7 +312,7 @@ class MainWindow(qtw.QWidget):
                 for i in value:
                     v = i
                     text = ''
-                    if '_' in i:
+                    if isinstance(i, str) and '_' in i:
                         v,text = i.split('_')
                         if text not in categories:
                             categories.append(text)
