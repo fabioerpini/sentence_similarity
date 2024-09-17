@@ -8,8 +8,8 @@ import json
 from datetime import datetime
 import sys
 from numpy import mean
-from sentence_similarity import T5_model, util
-from sklearn.metrics import mean_absolute_error
+
+
 from itertools import combinations
 
 DEBUG = False
@@ -441,6 +441,7 @@ class MainWindow(qtw.QWidget):
                 progress_bar.setValue(progress_bar.value() + 1)
 
                 qtw.QApplication.processEvents()
+                from sentence_similarity import T5_model, util
                 
                 model = T5_model()
                 embeddings = model.encode([item1, item2], convert_to_tensor=True)
@@ -599,6 +600,7 @@ class MainWindow(qtw.QWidget):
                 human_values = round((human_values-1)/4,2)
 
         if T5_values and human_values:
+            from sklearn.metrics import mean_absolute_error
             mae = round(mean_absolute_error([human_values], [T5_values]),2)
 
             self.evaluations_tab.layout().addWidget(qtw.QLabel('Mean absolute error: '+str(mae)))
