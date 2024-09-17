@@ -1611,7 +1611,7 @@ class MainWindow(qtw.QWidget):
         title.setFixedSize(title.sizeHint())
         self.slider_3A.setFixedSize(x-200, 30)
         self.slider_3A.valueChanged.connect(lambda: self.slider_label_3A.setText('Valore: '+str(self.slider_3A.value())))
-        self.slider_3A.valueChanged.connect(lambda: self.update_evaluation( '3A', self.slider_3A.value()))
+        self.slider_3A.valueChanged.connect(lambda: self.update_evaluation( '3A', self.slider_3A.value(), self.text_field.text()))
         self.slider_label_3A = qtw.QLabel('Valore: '+str(self.slider_3A.value()))
         self.slider_label_3A.setFixedSize(self.slider_label_3A.sizeHint())
         phase3_box.layout().addWidget(title, alignment=qtc.Qt.AlignmentFlag.AlignCenter)
