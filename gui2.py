@@ -524,7 +524,7 @@ class MainWindow(qtw.QWidget):
                     for i in self.evaluations[items]['3A']:
                         v = i
                         text = ''
-                        if '_' in i:
+                        if isinstance(i, str) and '_' in i:
                             v,text = i.split('_')
                         values.append(int(v))
                     phase3_box.layout().addWidget(qtw.QLabel('Quanto le seguenti due frasi parlano di cose che fanno riferimento a una categoria comune un po’ più generale? '+ str(round(mean(values),2))+ ' => ' + str(round((mean(values)-1)/4,2))))
