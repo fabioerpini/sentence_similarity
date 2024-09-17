@@ -10,11 +10,16 @@ def list_files():
 
 if __name__ == '__main__':
     files = list_files()
+    if not files:
+        print('No files to upload.')
+        exit()
+        
     print('Select a file to upload:')
     for i in range(len(files)):
         print(str(i+1)+':', files[i])
     file_num = int(input())
     file = files[file_num-1]
+
     print('You selected:', file)
     print('Sending file to email...')
     username = file.split('_')[0]
