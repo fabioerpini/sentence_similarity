@@ -317,8 +317,6 @@ class MainWindow(qtw.QWidget):
                         if text not in categories:
                             categories.append(text)
                     values.append(int(v))
-                print(values)
-                print(categories)
 
                 phase3_box.layout().addWidget(qtw.QLabel('Quanto le seguenti due frasi parlano di cose che fanno riferimento a una categoria comune un po’ più generale? '+ str(round(mean(values),2))+ '/5 => ' + str(round((mean(values)-1)/4,2))))
                 
