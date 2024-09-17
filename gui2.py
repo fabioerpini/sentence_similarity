@@ -1896,7 +1896,7 @@ class MainWindow(qtw.QWidget):
                             text = value[2:]
                             value = value[0]
                         phase3.layout().addWidget(qtw.QLabel('Quanto le seguenti due frasi parlano di cose che fanno riferimento a una categoria comune un po’ più generale? '+str(value)+'/5'))
-                        if len(self.evaluations[i]['3A']) > 1:
+                        if isinstance(self.evaluations[i]['3A'], str) and len(self.evaluations[i]['3A']) > 1:
                             phase3.layout().addWidget(qtw.QLabel('Categoria comune: '+text))
                         phase3.setHidden(False)
                     if '3B' in self.evaluations[i]:
