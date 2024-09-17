@@ -1958,12 +1958,13 @@ class MainWindow(qtw.QWidget):
                 self.phase2_box.layout().itemAt(2).widget().setChecked(True)
             if '3A' in self.evaluations[self.current_index]:
                 self.update_radio3A(self.phase3_box)
-                if '_' in self.evaluations[self.current_index]['3A']:
-                    value, text = self.evaluations[self.current_index]['3A'].split('_')
+                value = self.evaluations[self.current_index]['3A']
+                if isinstance(value, str) and '_' in value:
+                    value, text = value.split('_')
                     self.slider_3A.setValue(int(value))
                     self.text_field.setText(text)
                 else:
-                    self.slider_3A.setValue(int(self.evaluations[self.current_index]['3A']))
+                    self.slider_3A.setValue(int(value))
             if '3B' in self.evaluations[self.current_index]:
                 self.back_phase3(self.phase3_box)
                 self.phase3_box.layout().itemAt(1).widget().setChecked(True)
